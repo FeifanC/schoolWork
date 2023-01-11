@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "vector": "cpp",
+        "xmemory": "c",
+        "xutility": "c",
+        "stdio.h": "c",
+        "string.h": "c",
+        "cstdlib": "c",
+        "xstring": "c",
+        "initializer_list": "c",
+        "type_traits": "c",
+        "stdlib.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}

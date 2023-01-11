@@ -1,0 +1,6 @@
+Name: jerry
+Assignment: 10
+Quizzes: 12 10 10 
+Final Exam: 45
+Total: 87
+Course Number: 3

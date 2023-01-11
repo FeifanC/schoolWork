@@ -1,0 +1,24 @@
+4 5 3 
+adel 10 12 8 9 45 
+smile 6 8 7 9 39 
+mahmud 10 12 9 10 15 
+jose 8 11 7 8 41 
+fose 8 12 7 8 42 
+
+adam 10 12 9 9 45 
+smith 6 8 9 9 39 
+muhammad 8 11 7 7 41 
+jones 8 11 7 7 41 
+kones 9 10 8 8 42 
+
+adil 10 12 9 9 45 
+samuel 6 8 9 9 39 
+miguel 5 12 10 10 40 
+jerry 10 12 10 10 45 
+merry 9 10 8 8 42
+
+eril 10 12 9 9 45 
+damuel 6 8 9 9 39 
+niguel 5 12 10 10 40 
+kerry 8 11 7 7 41 
+lerry 9 10 8 8 42
