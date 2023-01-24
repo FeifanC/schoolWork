@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #define STACKSIZE 500
+#define RECORDS 100
 
 typedef struct instruction
 {
@@ -67,15 +68,26 @@ int main(int argc, char **argv)
         myRes.bp = 499;
         myRes.sp = 500;
         int input;
+        int jumpLines = 0;
+        int ARs[RECORDS];
+        int arSize = 0;
 
         for (int i = 0; i < STACKSIZE; i++)
             myPAS.stack[i] = 0;
 
-        printf("                PC   BP   SP   stack\n");
+        for (int i = 0; i < RECORDS; i++)
+            ARs[i] = 0;
+
+        printf("        PC   BP   SP   stack\n");
         printf("Initial values:  %d  %d  %d\n\n", myRes.pc, myRes.bp, myRes.sp);
 
         while (fscanf(inf, "%d %d %d", &myRes.ir.op, &myRes.ir.l, &myRes.ir.m) == 3)
         {
+            if (--jumpLines > 0)
+            {
+                continue;
+            }
+
             if (myRes.ir.op == 1)
             {
                 myPAS.stack[--myRes.sp] = myRes.ir.m;
@@ -85,66 +97,81 @@ int main(int argc, char **argv)
             {
                 if (myRes.ir.m == 1)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] + myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] + myPAS.stack[myRes.sp];
                 }
                 else if (myRes.ir.m == 2)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] - myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] - myPAS.stack[myRes.sp];
                 }
                 else if (myRes.ir.m == 3)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] * myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] * myPAS.stack[myRes.sp];
                 }
                 else if (myRes.ir.m == 4)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] / myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] / myPAS.stack[myRes.sp];
                 }
                 else if (myRes.ir.m == 5)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] == myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] == myPAS.stack[myRes.sp];
                 }
                 else if (myRes.ir.m == 6)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] != myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] != myPAS.stack[myRes.sp];
                 }
                 else if (myRes.ir.m == 7)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] < myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] < myPAS.stack[myRes.sp];
                 }
                 else if (myRes.ir.m == 8)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] <= myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] <= myPAS.stack[myRes.sp];
                 }
                 else if (myRes.ir.m == 9)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] > myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] > myPAS.stack[myRes.sp];
                 }
                 else if (myRes.ir.m == 10)
                 {
-                    myPAS.stack[++myRes.sp] = myPAS.stack[++myRes.sp] >= myPAS.stack[myRes.sp - 1];
+                    myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] >= myPAS.stack[myRes.sp];
                 }
                 else
                 {
                 }
+                myRes.sp = myRes.bp + 1;
+                myRes.bp = myPAS.stack[myRes.sp - 2];
+                myRes.pc = myPAS.stack[myRes.sp - 3];
                 printf("  RTN  ");
             }
             else if (myRes.ir.op == 3)
             {
-                myPAS.stack[--myRes.sp] = myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m];
+                if (arSize > 0)
+                    ARs[arSize++] = myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m];
+                else
+                    myPAS.stack[--myRes.sp] = myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m];
                 printf("  LOD  ");
             }
             else if (myRes.ir.op == 4)
             {
-                myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m] = myPAS.stack[myRes.sp];
-                myRes.sp++;
+                if (arSize > 0)
+                {
+                    ARs[arSize++] = myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m];
+                    myRes.sp--;
+                }
+                else
+                {
+                    myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m] = myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                }
                 printf("  STO  ");
             }
             else if (myRes.ir.op == 5)
             {
-                myPAS.stack[myRes.bp - 1] = base(myRes.bp, myRes.ir.l, myPAS);
-                myPAS.stack[myRes.bp - 2] = myRes.bp;
-                myPAS.stack[myRes.bp - 3] = myRes.pc;
-                myRes.bp = myRes.sp - 1;
+                ARs[arSize++] = base(myRes.bp, myRes.ir.l, myPAS);
+                ARs[arSize++] = myRes.bp;
+                ARs[arSize++] = myRes.pc;
+                arSize += (myRes.ir.m - arSize);
+                // myRes.bp = myRes.sp - 1;
                 myRes.pc = myRes.ir.m;
                 printf("  CAL  ");
             }
@@ -158,6 +185,7 @@ int main(int argc, char **argv)
                 myPAS.stack[myRes.sp - 1] = 0;
                 myRes.pc = myRes.ir.m;
                 printf("  JMP  ");
+                jumpLines = myRes.ir.m / 3;
             }
             else if (myRes.ir.op == 8)
             {
@@ -174,19 +202,19 @@ int main(int argc, char **argv)
                 {
                     printf("%c ", (char)(myPAS.stack[myRes.sp]));
                     myRes.sp++;
-                    printf("  SOU  ");
+                    printf("  Write  ");
                 }
                 else if (myRes.ir.m == 2)
                 {
                     printf("Please Enter an Integer: ");
                     scanf("%d", &input);
-                    myPAS.stack[myRes.sp] = input;
-                    myRes.sp++;
-                    printf("  SIN  ");
+                    myPAS.stack[STACKSIZE - 1] = input;
+                    myRes.sp--;
+                    printf("  Read  ");
                 }
                 else
                 {
-                    printf("  EOP  ");
+                    printf("  End of Program  ");
                     printf(" %d    %d   %d    %d    %d      ", myRes.ir.l, myRes.ir.m, myRes.pc, myRes.bp, myRes.sp);
                     myRes.pc += 3;
                     for (int i = myRes.sp; i < myRes.bp; i++)
@@ -200,13 +228,19 @@ int main(int argc, char **argv)
             else
             {
             }
-
             printf(" %d   %d   %d   %d    %d      ", myRes.ir.l, myRes.ir.m, myRes.pc, myRes.bp, myRes.sp);
             myRes.pc += 3;
             for (int i = myRes.sp; i <= myRes.bp; i++)
-            {
                 printf("%d ", myPAS.stack[i]);
+            if (arSize > 0)
+            {
+                printf("|");
+                for (int i = 0; i < arSize; i++)
+                {
+                    printf("%d ", ARs[i]);
+                }
             }
+
             printf("\n");
         }
         fclose(inf);
