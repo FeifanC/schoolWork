@@ -52,31 +52,31 @@ int base(int BP, int L, pas mypas)
 int main(int argc, char **argv)
 {
     FILE *inf;
-    res myRes;
-    pas myPAS;
+    res myRes; // Register instant
+    pas myPAS; // process_address_space instant
 
     inf = fopen(argv[1], "r");
 
     if (inf == NULL)
     {
-        printf("Error!");
+        printf("Error opening file!"); // checking file if it exists
         exit(1);
     }
     else
     {
         myRes.pc = 0;
         myRes.bp = 499;
-        myRes.sp = 500;
+        myRes.sp = 500; // initilization
         int input;
         int jumpLines = 0;
         int ARs[RECORDS];
         int arSize = 0;
 
         for (int i = 0; i < STACKSIZE; i++)
-            myPAS.stack[i] = 0;
+            myPAS.stack[i] = 0; // making every element in the stack to be 0
 
         for (int i = 0; i < RECORDS; i++)
-            ARs[i] = 0;
+            ARs[i] = 0; // array to store active record
 
         printf("        PC   BP   SP   stack\n");
         printf("Initial values:  %d  %d  %d\n\n", myRes.pc, myRes.bp, myRes.sp);
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
         {
             if (--jumpLines > 0)
             {
-                continue;
+                continue; // instructions should skip if the opCode is jump
             }
 
             if (myRes.ir.op == 1)
@@ -228,11 +228,11 @@ int main(int argc, char **argv)
             else
             {
             }
-            printf(" %d   %d   %d   %d    %d      ", myRes.ir.l, myRes.ir.m, myRes.pc, myRes.bp, myRes.sp);
-            myRes.pc += 3;
+            printf(" %d   %d   %d   %d    %d      ", myRes.ir.l, myRes.ir.m, myRes.pc, myRes.bp, myRes.sp); // output the stack
+            myRes.pc += 3;                                                                                  // program counter increase by 3 every line got read
             for (int i = myRes.sp; i <= myRes.bp; i++)
                 printf("%d ", myPAS.stack[i]);
-            if (arSize > 0)
+            if (arSize > 0) // printing activiation record
             {
                 printf("|");
                 for (int i = 0; i < arSize; i++)
