@@ -20,7 +20,7 @@ typedef struct instruction
 
 typedef struct process_address_space
 {
-    ins Text;             // instruction to execute
+    ins Text[STACKSIZE];  // instruction to execute
     int stack[STACKSIZE]; // data-stack used by PM/0 CPU
 } pas;
 
@@ -66,27 +66,36 @@ int main(int argc, char **argv)
     {
         myRes.pc = 0;
         myRes.bp = 499;
-        myRes.sp = 500; // initilization
-        int input;
-        int jumpLines = 0;
-        int ARs[RECORDS];
-        int arSize = 0;
+        myRes.sp = 500;
+
+        int k = 0;
+        int input;       // input for op = 9
+        int op1, l1, m1; // temp variables to read input from the input file
+        int halt = 0;    // flag to check if the program is running
+        int lines = 0;
+        int ar_exist = 0;
 
         for (int i = 0; i < STACKSIZE; i++)
             myPAS.stack[i] = 0; // making every element in the stack to be 0
 
-        for (int i = 0; i < RECORDS; i++)
-            ARs[i] = 0; // array to store active record
-
         printf("        PC   BP   SP   stack\n");
         printf("Initial values:  %d  %d  %d\n\n", myRes.pc, myRes.bp, myRes.sp);
 
-        while (fscanf(inf, "%d %d %d", &myRes.ir.op, &myRes.ir.l, &myRes.ir.m) == 3)
+        while (fscanf(inf, "%d %d %d", &op1, &l1, &m1) == 3)
         {
-            if (--jumpLines > 0)
-            {
-                continue; // instructions should skip if the opCode is jump
-            }
+            myPAS.Text[lines].op = op1;
+            myPAS.Text[lines].l = l1;
+            myPAS.Text[lines].m = m1;
+            lines++;
+        }
+        fclose(inf);
+
+        while (k < lines && halt == 0)
+        {
+            myRes.ir.op = myPAS.Text[k].op; // fetch from PAS text section
+            myRes.ir.l = myPAS.Text[k].l;
+            myRes.ir.m = myPAS.Text[k].m;
+            myRes.pc += 3;
 
             if (myRes.ir.op == 1)
             {
@@ -98,81 +107,97 @@ int main(int argc, char **argv)
                 if (myRes.ir.m == 1)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] + myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  ADD  ");
                 }
                 else if (myRes.ir.m == 2)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] - myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  SUB  ");
                 }
+
                 else if (myRes.ir.m == 3)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] * myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  MUL  ");
                 }
                 else if (myRes.ir.m == 4)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] / myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  DIV  ");
                 }
                 else if (myRes.ir.m == 5)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] == myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  EQL  ");
                 }
                 else if (myRes.ir.m == 6)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] != myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  NEQ  ");
                 }
                 else if (myRes.ir.m == 7)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] < myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  LSS  ");
                 }
                 else if (myRes.ir.m == 8)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] <= myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  LEQ  ");
                 }
                 else if (myRes.ir.m == 9)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] > myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  GTR  ");
                 }
                 else if (myRes.ir.m == 10)
                 {
                     myPAS.stack[myRes.sp + 1] = myPAS.stack[myRes.sp + 1] >= myPAS.stack[myRes.sp];
+                    myRes.sp++;
+                    printf("  GEQ  ");
                 }
                 else
                 {
+                    myRes.sp = myRes.bp + 1;
+                    myRes.bp = myPAS.stack[myRes.sp - 2];
+                    myRes.pc = myPAS.stack[myRes.sp - 3];
+                    k = myPAS.stack[myRes.sp - 3] / 3 - 1;
+
+                    ar_exist = 0;
+                    printf("  RTN  ");
                 }
-                myRes.sp = myRes.bp + 1;
-                myRes.bp = myPAS.stack[myRes.sp - 2];
-                myRes.pc = myPAS.stack[myRes.sp - 3];
-                printf("  RTN  ");
             }
             else if (myRes.ir.op == 3)
             {
-                if (arSize > 0)
-                    ARs[arSize++] = myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m];
-                else
-                    myPAS.stack[--myRes.sp] = myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m];
+                myPAS.stack[--myRes.sp] = myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m];
                 printf("  LOD  ");
             }
             else if (myRes.ir.op == 4)
             {
-                if (arSize > 0)
-                {
-                    ARs[arSize++] = myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m];
-                    myRes.sp--;
-                }
-                else
-                {
-                    myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m] = myPAS.stack[myRes.sp];
-                    myRes.sp++;
-                }
+                myPAS.stack[base(myRes.bp, myRes.ir.l, myPAS) - myRes.ir.m] = myPAS.stack[myRes.sp++];
                 printf("  STO  ");
             }
             else if (myRes.ir.op == 5)
             {
-                ARs[arSize++] = base(myRes.bp, myRes.ir.l, myPAS);
-                ARs[arSize++] = myRes.bp;
-                ARs[arSize++] = myRes.pc;
-                arSize += (myRes.ir.m - arSize);
-                // myRes.bp = myRes.sp - 1;
+
+                myPAS.stack[myRes.sp - 1] = base(myRes.bp, myRes.ir.l, myPAS);
+                myPAS.stack[myRes.sp - 2] = myRes.bp;
+                myPAS.stack[myRes.sp - 3] = myRes.pc;
+                myRes.bp = myRes.sp - 1;
+
+                k = myRes.ir.m / 3 - 1;
                 myRes.pc = myRes.ir.m;
+                ar_exist = 1;
+
                 printf("  CAL  ");
             }
             else if (myRes.ir.op == 6)
@@ -182,25 +207,26 @@ int main(int argc, char **argv)
             }
             else if (myRes.ir.op == 7)
             {
-                myPAS.stack[myRes.sp - 1] = 0;
+                k = myRes.ir.m / 3 - 1;
                 myRes.pc = myRes.ir.m;
+
                 printf("  JMP  ");
-                jumpLines = myRes.ir.m / 3;
             }
             else if (myRes.ir.op == 8)
             {
-                printf("  JPC  ");
                 if (myPAS.stack[myRes.sp] == 0)
                 {
+                    k = myRes.ir.m / 3 - 1;
                     myRes.pc = myRes.ir.m;
                     myRes.sp++;
+                    printf("  JPC  ");
                 }
             }
             else if (myRes.ir.op == 9)
             {
                 if (myRes.ir.m == 1)
                 {
-                    printf("%c ", (char)(myPAS.stack[myRes.sp]));
+                    printf("Output result is: %d \n", myPAS.stack[myRes.sp]);
                     myRes.sp++;
                     printf("  Write  ");
                 }
@@ -208,42 +234,29 @@ int main(int argc, char **argv)
                 {
                     printf("Please Enter an Integer: ");
                     scanf("%d", &input);
-                    myPAS.stack[STACKSIZE - 1] = input;
-                    myRes.sp--;
+                    myPAS.stack[--myRes.sp] = input;
                     printf("  Read  ");
                 }
                 else
                 {
                     printf("  End of Program  ");
-                    printf(" %d    %d   %d    %d    %d      ", myRes.ir.l, myRes.ir.m, myRes.pc, myRes.bp, myRes.sp);
-                    myRes.pc += 3;
-                    for (int i = myRes.sp; i < myRes.bp; i++)
-                    {
-                        printf("%d ", myPAS.stack[i]);
-                    }
-                    printf("\n");
-                    break;
+                    halt = 1;
                 }
             }
             else
             {
             }
-            printf(" %d   %d   %d   %d    %d      ", myRes.ir.l, myRes.ir.m, myRes.pc, myRes.bp, myRes.sp); // output the stack
-            myRes.pc += 3;                                                                                  // program counter increase by 3 every line got read
-            for (int i = myRes.sp; i <= myRes.bp; i++)
-                printf("%d ", myPAS.stack[i]);
-            if (arSize > 0) // printing activiation record
-            {
-                printf("|");
-                for (int i = 0; i < arSize; i++)
-                {
-                    printf("%d ", ARs[i]);
-                }
-            }
 
+            printf(" %d    %d   %d    %d    %d    ", myRes.ir.l, myRes.ir.m, myRes.pc, myRes.bp, myRes.sp);
+            for (int i = STACKSIZE - 1; i >= myRes.sp; i--)
+            {
+                if (i == myRes.bp && ar_exist == 1)
+                    printf(" | ");
+                printf("%d ", myPAS.stack[i]);
+            }
             printf("\n");
+            k++;
         }
-        fclose(inf);
     }
 
     return 0;
