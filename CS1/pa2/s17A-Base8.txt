@@ -1,4 +1,0 @@
-
-AAAAAAAAAAAAAAAAA
-
- 8 bit checksum is       5b for all   18 chars
