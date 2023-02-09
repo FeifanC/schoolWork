@@ -50,15 +50,6 @@ typedef enum
     elsesym
 } token_type;
 
-typedef struct
-{
-    int kind;      // const = 1, var = 2, proc = 3.
-    char name[11]; // name up to 11 chars
-    int val;       // number (ASCII value)
-    int level;     // L  level
-    int adr;       // M  address
-} namerecord_t;
-
 int check_for_reserved(char *word)
 {
     if (strcmp(word, "call" || "begin" || "end" || "if" || "then" || "else" || "while" || "do" || "read" || "write") == 0)
@@ -87,22 +78,7 @@ int main(int argc, char **argv)
 
     // Special Symbols: ‘+’, ‘-‘, ‘*’, ‘/’, ‘(‘, ‘)’, ‘=’, ’,’ , ‘.’, ‘ <’, ‘>’,  ‘;’ , ’:’ .
     int ssym[256];
-    ssym['+'] = "plus";
-    ssym['-'] = "minus";
-    ssym['*'] = "mult";
-    ssym['/'] = "slash";
-    ssym['('] = "lparen";
-    ssym[')'] = "rparen";
-    ssym['='] = "eql";
-    ssym[','] = "comma";
-    ssym['.'] = "period";
-    ssym['#'] = "neq";
-    ssym['<'] = "lss";
-    ssym['>'] = "gtr";
-    ssym['$'] = "leq";
-    ssym['%'] = "geq";
-    ssym[';'] = "semicolon";
-
+    char ssym[] = {'+', '-', '*', '/', '(', ')', '=', ',', '.', '#', '<', '>', '$', '%', ';'};
 
     // opening File
     inf = fopen(argv[1], "r");
@@ -113,10 +89,13 @@ int main(int argc, char **argv)
     }
     else
     {
+        char line[]
         outF = fopen("output.txt", "r");
         char buffer;
-        while (scanf("%[^\n]%*c", buffer))
+        while (!feof(inf))
         {
+            sscanf(line, filename, "%s");
+            printf("%s\n", line);
         }
     }
 }
