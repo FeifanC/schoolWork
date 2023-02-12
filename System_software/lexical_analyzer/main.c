@@ -139,10 +139,10 @@ int main(int argc, char **argv)
     else
     {
 
-        char *cur_read_str = malloc(CMAX * sizeof(char));      // cur_read_strentifier
-        int *list_nums = (int *)malloc(JUSTBIG * sizeof(int)); // Final list of numbers
-        char **list_var_name = malloc(JUSTBIG * sizeof(char)); // list of strings
-        int *list_var_nums = malloc(JUSTBIG * sizeof(int));    // name of variables.
+        char *cur_read_str = malloc(CMAX * sizeof(char));           // cur_read_strentifier
+        int *final_list_num = (int *)malloc(JUSTBIG * sizeof(int)); // Final list of numbers
+        char **list_var_name = malloc(JUSTBIG * sizeof(char));      // list of strings
+        int *list_var_nums = malloc(JUSTBIG * sizeof(int));         // name of variables.
         char c;
         int i = 0;
         int k = 0; // index for number array
@@ -176,12 +176,12 @@ int main(int argc, char **argv)
                 if (check_for_reserved(cur_read_str))
                 {
                     printf("%s      %d\n", cur_read_str, check_for_reserved(cur_read_str));
-                    list_nums[k++] = check_for_reserved(cur_read_str);
+                    final_list_num[k++] = check_for_reserved(cur_read_str);
                 }
                 else
                 {
                     printf("%s      %d\n", cur_read_str, DFS_id(cur_read_str));
-                    list_nums[k++] = DFS_id(cur_read_str);
+                    final_list_num[k++] = DFS_id(cur_read_str);
 
                     list_var_name[n] = malloc((strlen(cur_read_str) + 1) * sizeof(char));
                     strcpy(list_var_name[n], cur_read_str);
@@ -193,7 +193,7 @@ int main(int argc, char **argv)
                     continue;
 
                 printf("%c      %d\n", c, DFS_specialCh(c));
-                list_nums[k++] = DFS_specialCh(c);
+                final_list_num[k++] = DFS_specialCh(c);
             }
             else if (c == ':')
             {
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
                 cur_read_str[i] = '\0';
 
                 printf("%s      %d\n", cur_read_str, check_mulSymbol(cur_read_str));
-                list_nums[k++] = check_mulSymbol(cur_read_str);
+                final_list_num[k++] = check_mulSymbol(cur_read_str);
                 i = 0;
             }
             else if (isdigit(c))
@@ -218,12 +218,12 @@ int main(int argc, char **argv)
                 i = 0;
 
                 printf("%s      %d\n", cur_read_str, DFS_num(cur_read_str));
-                list_nums[k++] = DFS_num(cur_read_str);
+                final_list_num[k++] = DFS_num(cur_read_str);
 
                 if (DFS_specialCh(c))
                 {
                     printf("%c      %d\n", c, DFS_specialCh(c));
-                    list_nums[k++] = DFS_specialCh(c);
+                    final_list_num[k++] = DFS_specialCh(c);
                 }
 
                 list_var_nums[p++] = atoi(cur_read_str);
@@ -246,7 +246,7 @@ int main(int argc, char **argv)
                 }
 
                 printf("%c      %d\n", c, DFS_specialCh(c));
-                list_nums[k++] = DFS_specialCh(c);
+                final_list_num[k++] = DFS_specialCh(c);
             }
         }
 
@@ -256,13 +256,13 @@ int main(int argc, char **argv)
         p = 0;
         for (int i = 0; i < k; i++)
         {
-            printf(" %d ", list_nums[i]);
-            if (list_nums[i] == 2)
+            printf(" %d ", final_list_num[i]);
+            if (final_list_num[i] == 2)
             {
                 printf(" %s ", list_var_name[n]);
                 n++;
             }
-            if (list_nums[i] == 3)
+            if (final_list_num[i] == 3)
             {
                 printf(" %d ", list_var_nums[p]);
                 p++;
@@ -270,7 +270,7 @@ int main(int argc, char **argv)
         }
 
         free(cur_read_str);
-        free(list_nums);
+        free(final_list_num);
         for (int z = 0; z < JUSTBIG; z++)
             free(list_var_nums);
         fclose(inf);

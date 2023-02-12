@@ -15,7 +15,7 @@ public class Game {
 	int movesCount = 100;
 	int x, y;
 
-	public vocur_read_str print() {
+	public void print() {
 		for (int i = 0; i < boardSize; i++) {
 			for (int l = 0; l < boardSize; l++) {
 				System.out.print(board[i][l] + " ");
@@ -31,7 +31,7 @@ public class Game {
 		readMoves(fileName);
 	}
 
-	public vocur_read_str correctMoves1(char move, int winner) {
+	public void correctMoves1(char move, int winner) {
 		if (board[boardSize - 1][boardSize - 1] != 0)
 			return;
 
@@ -69,7 +69,7 @@ public class Game {
 		} else { // winner is 2
 			if (x + 2 < boardSize - 1 && y + 2 < boardSize - 1) {
 				board[++y][++x] = 1;
-			} else if (y + 1 == boardSize - 1) { // close to left scur_read_stre
+			} else if (y + 1 == boardSize - 1) { // close to left side
 				if (x % 2 == 1) { // currently odd
 					if (x + 1 < boardSize)
 						board[++y][++x] = 1;
@@ -78,7 +78,7 @@ public class Game {
 				} else { // currently even
 					board[++y][x] = 1;
 				}
-			} else if (x + 1 == boardSize - 1) { // close to right scur_read_stre
+			} else if (x + 1 == boardSize - 1) { // close to right side
 				if (y % 2 == 1) { // currently odd
 					if (y + 1 < boardSize)
 						board[++y][++x] = 1;
@@ -133,7 +133,7 @@ public class Game {
 		return board[boardSize - 1][boardSize - 1];
 	}
 
-	public vocur_read_str correctMoves2(char move) {
+	public void correctMoves2(char move) {
 		if (board[boardSize - 1][boardSize - 1] != 0)
 			return;
 
@@ -160,11 +160,11 @@ public class Game {
 		}
 	}
 
-	public vocur_read_str readMoves(String fileName) // storing the letters from moves files in an char array
+	public void readMoves(String fileName) // storing the letters from moves files in an char array
 	{
 		int i = 0;
 		try {
-			File myFile = new File("/home/net/fe477093/cs2/Game/src/" + fileName);
+			File myFile = new File("src/" + fileName);
 //			File myFile = new File("C:\\Users\\AlexB\\eclipse-workspace\\Game\\src\\" + fileName);
 			Scanner myReader = new Scanner(myFile);
 			while (myReader.hasNextLine()) {
