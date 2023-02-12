@@ -19,9 +19,9 @@ struct node
 // function prototypes
 struct node *insert(struct node *list, int d);
 struct node *del(struct node *list, int d);
-void print(struct node *list);
-void freeList(struct node *list);
-void copy(struct node *q, struct node **s);
+vocur_read_str print(struct node *list);
+vocur_read_str freeList(struct node *list);
+vocur_read_str copy(struct node *q, struct node **s);
 
 // driver function
 int main()
@@ -86,7 +86,7 @@ int main()
 }
 
 /* copies a linked list into another */
-void copy(struct node *source, struct node **dest)
+vocur_read_str copy(struct node *source, struct node **dest)
 {
     if (source)
     {
@@ -147,7 +147,7 @@ struct node *del(struct node *list, int item)
 }
 
 // display
-void print(struct node *list)
+vocur_read_str print(struct node *list)
 {
     if (list == NULL)
         return;
@@ -156,7 +156,7 @@ void print(struct node *list)
     print(list->next);
 }
 
-void freeList(struct node *list)
+vocur_read_str freeList(struct node *list)
 {
     if (list == NULL)
         return;

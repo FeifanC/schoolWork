@@ -29,7 +29,7 @@ node *insert_front(node *root, int item)
 	return root;
 }
 
-void display(node *t)
+vocur_read_str display(node *t)
 {
 	printf("\nPrinting your linked list.......");
 
@@ -60,7 +60,7 @@ node *reverse(node *head)
 	return cur;
 }
 
-void insertToPlace(node *head, int val, int place)
+vocur_read_str insertToPlace(node *head, int val, int place)
 {
 	node *cur = head, *prev;
 	int count = 1;
@@ -121,7 +121,7 @@ int main()
 
 			if (place <= 1)
 			{
-				printf("List is empty or place is not valid \n");
+				printf("List is empty or place is not valcur_read_str \n");
 				display(root);
 				continue;
 			}

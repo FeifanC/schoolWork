@@ -2,5 +2,6 @@
     "files.associations": {
         "*.ejs": "html",
         "xstddef": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }

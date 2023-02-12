@@ -11,7 +11,7 @@
 
 struct _MEM_INFO
 {
-	void			*address;
+	vocur_read_str			*address;
 	unsigned int	size;
 	char			file_name[FILE_NAME_LENGTH];
 	unsigned int	line;
@@ -24,16 +24,16 @@ struct _MEM_LEAK {
 };
 typedef struct _MEM_LEAK MEM_LEAK;
 
-void add(MEM_INFO alloc_info);
-void erase(unsigned pos);
-void clear(void);
+vocur_read_str add(MEM_INFO alloc_info);
+vocur_read_str erase(unsigned pos);
+vocur_read_str clear(vocur_read_str);
 
-void *xmalloc(unsigned int size, const char * file, unsigned int line);
-void *xcalloc(unsigned int elements, unsigned int size, const char * file, unsigned int line);
-void xfree(void * mem_ref);
+vocur_read_str *xmalloc(unsigned int size, const char * file, unsigned int line);
+vocur_read_str *xcalloc(unsigned int elements, unsigned int size, const char * file, unsigned int line);
+vocur_read_str xfree(vocur_read_str * mem_ref);
 
-void add_mem_info (void * mem_ref, unsigned int size,  const char * file, unsigned int line);
-void remove_mem_info (void * mem_ref);
-void report_mem_leak(void);
+vocur_read_str add_mem_info (vocur_read_str * mem_ref, unsigned int size,  const char * file, unsigned int line);
+vocur_read_str remove_mem_info (vocur_read_str * mem_ref);
+vocur_read_str report_mem_leak(vocur_read_str);
 
 #endif

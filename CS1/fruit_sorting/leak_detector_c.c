@@ -12,14 +12,14 @@ static MEM_LEAK * ptr_start = NULL;
 static MEM_LEAK * ptr_next =  NULL;
 
 
-void * xmalloc (unsigned int size, const char * file, unsigned int line);
-void * xcalloc (unsigned int elements, unsigned int size, const char * file, unsigned int line);
-void xfree(void * mem_ref);
+vocur_read_str * xmalloc (unsigned int size, const char * file, unsigned int line);
+vocur_read_str * xcalloc (unsigned int elements, unsigned int size, const char * file, unsigned int line);
+vocur_read_str xfree(vocur_read_str * mem_ref);
 /*
  * adds allocated memory info. into the list
  *
  */
-void add(MEM_INFO alloc_info)
+vocur_read_str add(MEM_INFO alloc_info)
 {
 
 	MEM_LEAK * mem_leak_info = NULL;
@@ -46,7 +46,7 @@ void add(MEM_INFO alloc_info)
  * erases memory info. from the list
  *
  */
-void erase(unsigned pos)
+vocur_read_str erase(unsigned pos)
 {
 
 	unsigned index = 0;
@@ -77,7 +77,7 @@ void erase(unsigned pos)
 /*
  * deletes all the elements from the list
  */
-void clear()
+vocur_read_str clear()
 {
 	MEM_LEAK * temp = ptr_start;
 	MEM_LEAK * alloc_info = ptr_start;
@@ -93,9 +93,9 @@ void clear()
 /*
  * replacement of malloc
  */
-void * xmalloc (unsigned int size, const char * file, unsigned int line)
+vocur_read_str * xmalloc (unsigned int size, const char * file, unsigned int line)
 {
-	void * ptr = malloc (size);
+	vocur_read_str * ptr = malloc (size);
 	if (ptr != NULL)
 	{
 		add_mem_info(ptr, size, file, line);
@@ -106,10 +106,10 @@ void * xmalloc (unsigned int size, const char * file, unsigned int line)
 /*
  * replacement of calloc
  */
-void * xcalloc (unsigned int elements, unsigned int size, const char * file, unsigned int line)
+vocur_read_str * xcalloc (unsigned int elements, unsigned int size, const char * file, unsigned int line)
 {
 	unsigned total_size;
-	void * ptr = calloc(elements , size);
+	vocur_read_str * ptr = calloc(elements , size);
 	if(ptr != NULL)
 	{
 		total_size = elements * size;
@@ -122,7 +122,7 @@ void * xcalloc (unsigned int elements, unsigned int size, const char * file, uns
 /*
  * replacement of free
  */
-void xfree(void * mem_ref)
+vocur_read_str xfree(vocur_read_str * mem_ref)
 {
 	remove_mem_info(mem_ref);
 	free(mem_ref);
@@ -132,7 +132,7 @@ void xfree(void * mem_ref)
  * gets the allocated memory info and adds it to a list
  *
  */
-void add_mem_info (void * mem_ref, unsigned int size,  const char * file, unsigned int line)
+vocur_read_str add_mem_info (vocur_read_str * mem_ref, unsigned int size,  const char * file, unsigned int line)
 {
 	MEM_INFO mem_alloc_info;
 
@@ -151,7 +151,7 @@ void add_mem_info (void * mem_ref, unsigned int size,  const char * file, unsign
  * if the allocated memory info is part of the list, removes it
  *
  */
-void remove_mem_info (void * mem_ref)
+vocur_read_str remove_mem_info (vocur_read_str * mem_ref)
 {
 	unsigned short index;
 	MEM_LEAK  * leak_info = ptr_start;
@@ -170,7 +170,7 @@ void remove_mem_info (void * mem_ref)
 /*
  * writes all info of the unallocated memory into a file
  */
-void report_mem_leak(void)
+vocur_read_str report_mem_leak(vocur_read_str)
 {
 	unsigned short index;
 	MEM_LEAK * leak_info;

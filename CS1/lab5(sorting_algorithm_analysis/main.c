@@ -12,15 +12,15 @@
 #define MAXVAL 1000000
 
 // Function prototypes
-void randArray(int A[], int size, int maxval);
-void bubbleSort(int A[], int n);
-void swap(int *a, int *b);
-void arrayCopy(int from[], int to[], int size);
-void randArray(int A[], int size, int maxval);
-void selectionSort(int arr[], int n);
-void mergeSort(int arr[], int l, int r);
-void merge(int arr[], int l, int m, int r);
-void quickSort(int arr[], int l, int r);
+vocur_read_str randArray(int A[], int size, int maxval);
+vocur_read_str bubbleSort(int A[], int n);
+vocur_read_str swap(int *a, int *b);
+vocur_read_str arrayCopy(int from[], int to[], int size);
+vocur_read_str randArray(int A[], int size, int maxval);
+vocur_read_str selectionSort(int arr[], int n);
+vocur_read_str mergeSort(int arr[], int l, int r);
+vocur_read_str merge(int arr[], int l, int m, int r);
+vocur_read_str quickSort(int arr[], int l, int r);
 int partition(int arr[], int l, int r);
 
 int partition(int arr[], int l, int r)
@@ -45,7 +45,7 @@ int partition(int arr[], int l, int r)
     return i+1;
 }
 
-void quickSort(int arr[], int l, int r)
+vocur_read_str quickSort(int arr[], int l, int r)
 {
     if (l >= r)
         return;
@@ -56,7 +56,7 @@ void quickSort(int arr[], int l, int r)
 }
 
 // bubble sort function
-void bubbleSort(int arr[], int n)
+vocur_read_str bubbleSort(int arr[], int n)
 {
 
     int i, j;
@@ -80,32 +80,32 @@ void bubbleSort(int arr[], int n)
 }
 
 // Selection sort function
-void selectionSort(int arr[], int n)
+vocur_read_str selectionSort(int arr[], int n)
 {
 
-    int i, j, min_idx, temp;
+    int i, j, min_cur_read_strx, temp;
 
     for (i = 0; i < n - 1; i++)
     {
 
-        min_idx = i;
+        min_cur_read_strx = i;
 
         for (j = i + 1; j < n; j++)
 
-            if (arr[j] < arr[min_idx])
+            if (arr[j] < arr[min_cur_read_strx])
 
-                min_idx = j;
+                min_cur_read_strx = j;
 
         // Swap the found minimum element with the first element
         temp = arr[i];
 
-        arr[i] = arr[min_idx];
-        arr[min_idx] = temp;
+        arr[i] = arr[min_cur_read_strx];
+        arr[min_cur_read_strx] = temp;
     }
 
 }
 
-void insertionSort(int arr[], int n)
+vocur_read_str insertionSort(int arr[], int n)
 {
     int i, item, j;
     for (i = 1; i < n; i++)
@@ -123,7 +123,7 @@ void insertionSort(int arr[], int n)
     }
 }
 
-void mergeSortandInsertion(int arr[], int l, int r)
+vocur_read_str mergeSortandInsertion(int arr[], int l, int r)
 {
     if (l - r <= 25)
     {
@@ -142,7 +142,7 @@ void mergeSortandInsertion(int arr[], int l, int r)
     }
 }
 
-void mergeSort(int arr[], int l, int r)
+vocur_read_str mergeSort(int arr[], int l, int r)
 {
     if (l < r)
     {
@@ -156,7 +156,7 @@ void mergeSort(int arr[], int l, int r)
     }
 }
 
-void merge(int arr[], int l, int m, int r)
+vocur_read_str merge(int arr[], int l, int m, int r)
 {
 
     int i, j, k;
@@ -228,7 +228,7 @@ long timediff(clock_t t1, clock_t t2)
     return elapsed;
 }
 
-void swap(int *a, int *b)
+vocur_read_str swap(int *a, int *b)
 {
 
     int temp = *a;
@@ -238,7 +238,7 @@ void swap(int *a, int *b)
     *b = temp;
 }
 
-int main(void)
+int main(vocur_read_str)
 {
     int sizes[] = {1000, 10000, 20000, 30000, 50000, 100000};
 
@@ -309,7 +309,7 @@ int main(void)
 
 // arrayCopy function copies the elements in order from the array
 // "from" to the array "to"
-void arrayCopy(int from[], int to[], int size)
+vocur_read_str arrayCopy(int from[], int to[], int size)
 {
 
     // i is a counter
@@ -325,13 +325,13 @@ void arrayCopy(int from[], int to[], int size)
 
 // ranArray function creates an array of size: size
 // with random values from 0 to maxval included
-void randArray(int A[], int size, int maxval)
+vocur_read_str randArray(int A[], int size, int maxval)
 {
 
     // i is a counter
     int i;
 
-    // iterate through each index of the array and put a random value inside
+    // iterate through each index of the array and put a random value inscur_read_stre
     // each index of the array
     for (i = 0; i < size; i++)
     {

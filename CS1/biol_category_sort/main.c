@@ -26,8 +26,8 @@ typedef struct treeNameNode
 
 treeNameNode *createTreeNameNode(char treeName[], treeNameNode *root);
 itemNode *buildNameTree(itemNode *element, char itemName[], int c);
-void traverse_in_traverse(itemNode *root);
-void just_traverse(treeNameNode *root, int ifPrintItem);
+vocur_read_str traverse_in_traverse(itemNode *root);
+vocur_read_str just_traverse(treeNameNode *root, int ifPrintItem);
 treeNameNode *searchNameNode(treeNameNode *root, char treeName[]);
 itemNode *searchItemNode(itemNode *root, char subTypeName[]);
 itemNode *myMove(char action[], itemNode *root, char itemName[], char type[], int c, treeNameNode *bigRoot);
@@ -37,10 +37,10 @@ int height_balance_f(itemNode *root);
 itemNode *minValue_helper(itemNode *root);
 itemNode *delete_f(itemNode *root, char subTypeName[]);
 itemNode *reduce_f(itemNode *root, char subTypeName[], int c);
-void deleteName_helper(itemNode *root);
+vocur_read_str deleteName_helper(itemNode *root);
 treeNameNode *delete_name_f(treeNameNode *root, char type[]);
 treeNameNode *minValue_helper2(treeNameNode *t);
-void IhaveADream(treeNameNode *root);
+vocur_read_str IhaveADream(treeNameNode *root);
 
 int main()
 {
@@ -56,7 +56,7 @@ int main()
         char typeName[MAXLEN];
         char subTypeName[MAXLEN];
         int c;
-        char stupidAction[MAXLEN];
+        char stupcur_read_strAction[MAXLEN];
 
         fscanf(inFile, "%d %d %d", &types, &totalNodes, &queries);
 
@@ -79,18 +79,18 @@ int main()
 
         for (int k = 0; k < queries; k++)
         {
-            fscanf(inFile, "%s %s", stupidAction, typeName);
+            fscanf(inFile, "%s %s", stupcur_read_strAction, typeName);
 
-            if (strcmp(stupidAction, "reduce") == 0)
+            if (strcmp(stupcur_read_strAction, "reduce") == 0)
                 fscanf(inFile, "%s %d", subTypeName, &c);
 
-            if (!(strcmp(stupidAction, "height_balance") == 0) && !(strcmp(stupidAction, "count") == 0) && !(strcmp(stupidAction, "delete_name") == 0) && !(strcmp(stupidAction, "reduce") == 0))
+            if (!(strcmp(stupcur_read_strAction, "height_balance") == 0) && !(strcmp(stupcur_read_strAction, "count") == 0) && !(strcmp(stupcur_read_strAction, "delete_name") == 0) && !(strcmp(stupcur_read_strAction, "reduce") == 0))
                 fscanf(inFile, "%s", subTypeName);
 
             foundTreeName = searchNameNode(myMainTree, typeName);
 
             if (foundTreeName)
-                foundTreeName->theTree = myMove(stupidAction, foundTreeName->theTree, subTypeName, typeName, c, myMainTree);
+                foundTreeName->theTree = myMove(stupcur_read_strAction, foundTreeName->theTree, subTypeName, typeName, c, myMainTree);
             else
             {
                 printf("\n%s does not exist", typeName);
@@ -108,14 +108,14 @@ int main()
     }
     else
     {
-        printf("Please provide correct input file");
+        printf("Please provcur_read_stre correct input file");
         exit(-1);
     }
 
     return 0;
 }
 
-void IhaveADream(treeNameNode *root)
+vocur_read_str IhaveADream(treeNameNode *root)
 {
     if (root == NULL)
         return;
@@ -251,7 +251,7 @@ treeNameNode *delete_name_f(treeNameNode *root, char type[])
     return root;
 }
 
-void deleteName_helper(itemNode *root)
+vocur_read_str deleteName_helper(itemNode *root)
 {
     if (root == NULL)
         return;
@@ -458,7 +458,7 @@ itemNode *buildNameTree(itemNode *root, char itemName[MAXLEN], int c)
     return root;
 }
 
-void traverse_in_traverse(itemNode *root)
+vocur_read_str traverse_in_traverse(itemNode *root)
 {
     if (root == NULL)
         return;
@@ -469,7 +469,7 @@ void traverse_in_traverse(itemNode *root)
     traverse_in_traverse(root->right);
 }
 
-void just_traverse(treeNameNode *root, int ifPrintItem)
+vocur_read_str just_traverse(treeNameNode *root, int ifPrintItem)
 {
     if (root == NULL)
         return;

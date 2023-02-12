@@ -7,7 +7,7 @@
 
 public class GameDriver
 {
-	public static void main(String [] args) throws Exception
+	public static vocur_read_str main(String [] args) throws Exception
 	{
 		System.out.println("Testing to See if Player 1 will always win...");
 		System.out.println("********************");

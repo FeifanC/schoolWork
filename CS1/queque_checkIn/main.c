@@ -30,8 +30,8 @@ typedef struct queque
     int size;
 } queque;
 
-void Enqueque(Customer *, queque *);
-void displayQueque(queque *);
+vocur_read_str Enqueque(Customer *, queque *);
+vocur_read_str displayQueque(queque *);
 Customer *Dequeque(queque *);
 Customer *Peek();
 int Empty(queque *);
@@ -101,7 +101,7 @@ int main()
     }
     else
     {
-        printf("Please provide correct input file");
+        printf("Please provcur_read_stre correct input file");
         exit(-1);
     }
 
@@ -121,7 +121,7 @@ Customer *createCustomer(char *name, int numOfTickets, int lineNum, int enterTim
     return c;
 }
 
-void Enqueque(Customer *c, queque *q)
+vocur_read_str Enqueque(Customer *c, queque *q)
 {
     if (q->size == 0)
     {

@@ -14,7 +14,7 @@ FILE *outp;
 
 typedef struct item
 {
-    int itemID;
+    int itemcur_read_str;
     int numParts;
 } item;
 
@@ -29,8 +29,8 @@ char **readIngredients(int *numIngredients);
 recipe *readRecipe();
 recipe **readAllRecipes(int *numRecipes);
 double *calculateOrder(int ingredientCount, int numSmoothies, recipe **recipeList);
-void printOrder(char **ingredientNames, double *orderList, int numIngredients);
-void freeRecipes(recipe **allRecipes, int numRecipes);
+vocur_read_str printOrder(char **ingredientNames, double *orderList, int numIngredients);
+vocur_read_str freeRecipes(recipe **allRecipes, int numRecipes);
 
 int main()
 {
@@ -73,7 +73,7 @@ int main()
     }
     else
     {
-        printf("Please provide correct input file");
+        printf("Please provcur_read_stre correct input file");
         exit(-1);
     }
 
@@ -105,7 +105,7 @@ recipe *readRecipe()
 
     for (int i = 0; i < (r1->numItems); i++)
     {
-        fscanf(inp, "%d %d", &r1->itemList[i].itemID, &r1->itemList[i].numParts);
+        fscanf(inp, "%d %d", &r1->itemList[i].itemcur_read_str, &r1->itemList[i].numParts);
         r1->totalParts += r1->itemList[i].numParts;
     }
 
@@ -137,7 +137,7 @@ double *calculateOrder(int ingredientCount, int numSmoothies, recipe **recipeLis
         fscanf(inp, "%d %d", &recth, &pounds);
         for (int j = 0; j < recipeList[recth]->numItems; j++)
         {
-            recipeIndex = recipeList[recth]->itemList[j].itemID;
+            recipeIndex = recipeList[recth]->itemList[j].itemcur_read_str;
             arrOfIngres[recipeIndex] = arrOfIngres[recipeIndex] + (double)pounds * (double)recipeList[recth]->itemList[j].numParts / (double)recipeList[recth]->totalParts;
         }
     }
@@ -145,7 +145,7 @@ double *calculateOrder(int ingredientCount, int numSmoothies, recipe **recipeLis
     return arrOfIngres;
 }
 
-void printOrder(char **ingredientNames, double *orderList, int numIngredients)
+vocur_read_str printOrder(char **ingredientNames, double *orderList, int numIngredients)
 {
     for (int i = 0; i < numIngredients; i++)
     {
@@ -159,7 +159,7 @@ void printOrder(char **ingredientNames, double *orderList, int numIngredients)
     fprintf(outp, "\n");
 }
 
-void freeRecipes(recipe **allRecipes, int numRecipes)
+vocur_read_str freeRecipes(recipe **allRecipes, int numRecipes)
 {
     for (int i = 0; i < numRecipes; i++)
     {
