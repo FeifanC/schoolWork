@@ -52,13 +52,16 @@ int check_for_reserved(char word[])
     else
         return 0;
 }
-
+//Function to check the identifiers making sure they are valid
 int DFS_id(char *c)
 {
     if (isdigit(c[0])) // if first char of the identifier is digit then it's error
         return 999;
-    if (strlen(c) > 11) // identifier can't be over 11 chars
+    if (strlen(c) > 11){
+        // identifier can't be over 11 chars
+        printf("Invalid identifier\n");
         return 999;
+    } 
 
     for (int i = 0; i < strlen(c); i++)
     {
@@ -67,17 +70,21 @@ int DFS_id(char *c)
     }
     return 2;
 }
-
+//Checking the number making sure is valid.
 int DFS_num(char *c)
 {
     for (int i = 0; i < strlen(c); i++)
     {
+        
         if (!isdigit(c[i]))
             return 999;
     }
 
-    if (atoi(c) > IMAX) // if the integer value bigger than 32767
+    if (atoi(c) > IMAX){
+        // if the integer value bigger than 32767
+        printf("Invalid integer\n");
         return 999;
+    }
     return 3;
 }
 
@@ -163,6 +170,7 @@ int main(int argc, char **argv)
         inf = fopen(argv[1], "r");
         while ((c = fgetc(inf)) != EOF)
         {
+            //Check if next character is a letter or a number.
             if (isalpha(c))
             {
                 cur_read_str[i++] = c;
@@ -182,7 +190,7 @@ int main(int argc, char **argv)
                 {
                     printf("%s      %d\n", cur_read_str, DFS_id(cur_read_str));
                     final_list_num[k++] = DFS_id(cur_read_str);
-
+                    // Allocation new array to keep track of the variables in order.
                     list_var_name[n] = malloc((strlen(cur_read_str) + 1) * sizeof(char));
                     strcpy(list_var_name[n], cur_read_str);
 
@@ -206,6 +214,7 @@ int main(int argc, char **argv)
                 final_list_num[k++] = check_mulSymbol(cur_read_str);
                 i = 0;
             }
+            //Check weather is a digit if it is check the statement.
             else if (isdigit(c))
             {
                 cur_read_str[i++] = c;
