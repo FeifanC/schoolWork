@@ -160,6 +160,12 @@ int main(int argc, char **argv)
                     myRes.sp++;
                     printf("  GEQ  ");
                 }
+                else if(myRes.ir.m = 11)
+                {
+                    myStack[myRes.sp + 1] = myStack[myRes.sp + 1] % 2;
+                    myRes.sp++;
+                    printf(" ODD ");
+                }
                 else
                 {
                     myRes.sp = myRes.bp + 1;

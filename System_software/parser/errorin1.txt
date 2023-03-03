@@ -1,1 +1,2 @@
-const sfdfsd = 3, sdfk = 2;
+const d3 =555,sdfk=2;
+var a  ,b  ,  c   ;
