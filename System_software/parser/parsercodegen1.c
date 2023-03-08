@@ -66,30 +66,26 @@ int main(int argc, char **argv)
     }
     else
     {
-        block_f(inf);
-
-        char *token = getNextToken(inf);       
-
-        if (strcmp(token, ".") != 0)
-        {
-            error_f(1);
-            printf("HALT");
-        }
 
         printf("Assembly Code:\n");
         printf("Line    OP    L    M\n");
         printf("  0    JMP    0    3\n");
-
         block_f(inf);
 
-        printf("Symbol Table:\n");
+        char c = fgetc(inf);
+        if (c != '.')
+        {
+            error_f(1);
+        }else{
+            printf("  %d    SYS    0    3\n", ++lineCount);
+        }
+
+        printf("\nSymbol Table:\n");
         printf("Kind | Name        | Value | Level | Address | Mark\n");
         printf("---------------------------------------------------\n");
-        printf("   3 |        main |     0 |     0 |     3   |  0\n");
+        printf("   3 |        main |     0 |     0 |     3 |     0\n");
         print_symb_table();
 
-        free(token);
-        
         fclose(inf);
     }
 }
@@ -98,7 +94,7 @@ void print_symb_table()
 {
     for (int i = 0; i < si; i++)
     {
-        printf("   %d |           %s |     %d |     %d |     %d |     %d\n", symbol_table[i].kind, symbol_table[i].name, symbol_table[i].val, symbol_table[i].level, symbol_table[i].addr);
+        printf("   %d |           %s |     %d |     %d |     %d |     1\n", symbol_table[i].kind, symbol_table[i].name, symbol_table[i].val, symbol_table[i].level, symbol_table[i].addr);
     }
 }
 
@@ -235,6 +231,17 @@ char *getNextToken(FILE *inf)
         while ((c = fgetc(inf)) == ' ' || (c == '\n') || (c == '\t'))
             ;
 
+    if (c == ':' && ((c = fgetc(inf)) == '='))
+        return ":=";
+
+    if (DFS_specialCh(c))
+    {
+        char *ch_str = malloc(sizeof(char) * 2);
+        ch_str[0] = c;
+        ch_str[1] = '\0';
+        return ch_str;
+    }
+
     while (!DFS_specialCh(c) && (c != '\n') && (c != ' '))
     {
         cur_read_str[i++] = c;
@@ -242,7 +249,6 @@ char *getNextToken(FILE *inf)
     }
 
     cur_read_str[i] = '\0';
-
     return cur_read_str;
 }
 
@@ -261,59 +267,59 @@ void error_f(int list_num)
     }
     else if (list_num == 2)
     {
-        printf("const, var, and read keywords must be followed by identifier");
+        printf("const, var, and read keywords must be followed by identifier\n");
     }
     else if (list_num == 3)
     {
-        printf("symbol name has already been declare");
+        printf("symbol name has already been declare\n");
     }
     else if (list_num == 4)
     {
-        printf("constants must be assigned with =");
+        printf("constants must be assigned with =\n");
     }
     else if (list_num == 5)
     {
-        printf("constants must be assigned an integer value");
+        printf("constants must be assigned an integer value\n");
     }
     else if (list_num == 6)
     {
-        printf("constant and variable declarations must be followed by a semicolon");
+        printf("constant and variable declarations must be followed by a semicolon\n");
     }
     else if (list_num == 7)
     {
-        printf("undeclared identifier");
+        printf("undeclared identifier\n");
     }
     else if (list_num == 8)
     {
-        printf("only variable values may be altered");
+        printf("only variable values may be altered\n");
     }
     else if (list_num == 9)
     {
-        printf("assignment statements must use :=");
+        printf("assignment statements must use :=\n");
     }
     else if (list_num == 10)
     {
-        printf("begin must be followed by end");
+        printf("begin must be followed by end\n");
     }
     else if (list_num == 11)
     {
-        printf("if must be followed by then");
+        printf("if must be followed by then\n");
     }
     else if (list_num == 12)
     {
-        printf("while must be followed by do");
+        printf("while must be followed by do\n");
     }
     else if (list_num == 13)
     {
-        printf("condition must contain comparison operator");
+        printf("condition must contain comparison operator\n");
     }
     else if (list_num == 14)
     {
-        printf("right parenthesis must follow left parenthesis");
+        printf("right parenthesis must follow left parenthesis\n");
     }
     else if (list_num == 15)
     {
-        printf("arithmetic equations must contain operands, parentheses, numbers, or symbols");
+        printf("arithmetic equations must contain operands, parentheses, numbers, or symbols\n");
     }
     else
     {
@@ -434,10 +440,9 @@ int expression_f(FILE *inf, char *token_str)
     }
     else
     {
-        if (strcmp(token_str, "+"))
+        if (strcmp(token_str, "+") == 0)
         {
             cur_read_str = getNextToken(inf);
-
             term_f(inf, cur_read_str);
 
             while (strcmp(cur_read_str, "+") == 0 || strcmp(cur_read_str, "-") == 0)
@@ -485,11 +490,9 @@ int factor_f(FILE *inf, char *token_str)
     }
     else
     {
-        if (token_str - '0' >= 0)
+        if (DFS_num(token_str))
         {
-            printf("  %d    LIT    0    %d\n", ++lineCount, m);
-
-            cur_read_str = getNextToken(inf);
+            printf("  %d    LIT    0    %s\n", ++lineCount, token_str);
         }
         else if (strcmp(token_str, "(") == 0)
         {
@@ -592,11 +595,7 @@ int statement_f(FILE *inf, char *token_str)
     char c;
     int i = 0;
 
-    if ((c = fgetc(inf)) == ' ' || (c == '\n') || (c == '\t'))
-        while ((c = fgetc(inf)) == ' ' || (c == '\n') || (c == '\t'))
-            ;
-
-    if (curTokenIndex != -1)
+    if (curTokenIndex >= 0)
     {
         if (symbol_table[curTokenIndex].kind != 2)
         {
@@ -611,6 +610,7 @@ int statement_f(FILE *inf, char *token_str)
             cur_read_str = getNextToken(inf);
 
             expression_f(inf, cur_read_str);
+            term_f(inf, cur_read_str);
 
             lineCount++;
             m = symbol_table[curTokenIndex].addr;
@@ -634,20 +634,31 @@ int statement_f(FILE *inf, char *token_str)
         { // it's reserved word
             if (strcmp(token_str, "begin") == 0)
             {
+
                 do
                 {
                     cur_read_str = getNextToken(inf);
 
-                    statement_f(inf, cur_read_str);
-                } while (c == ';');
+                    if (strcmp(cur_read_str, "end") == 0)
+                    {
+                        fseek(inf, -1, SEEK_CUR);
+                        return 1;
+                    }
 
-                if (strcmp(cur_read_str, "end"))
+                    statement_f(inf, cur_read_str);
+                    fseek(inf, -1, SEEK_CUR);
+
+                    cur_read_str = getNextToken(inf);
+
+                } while (strcmp(cur_read_str, ";") == 0);
+
+                if (strcmp(cur_read_str, "end") != 0)
                 {
                     error_f(10);
                     return -1;
                 }
             }
-            if (strcmp(token_str, "if"))
+            if (strcmp(token_str, "if") == 0)
             {
                 cur_read_str = getNextToken(inf);
 
@@ -710,12 +721,12 @@ int statement_f(FILE *inf, char *token_str)
 
                 int symIdx = symb_table_check(cur_read_str);
 
-                if(symIdx == -1)
+                if (symIdx == -1)
                 {
                     error_f(7);
                     return -1;
                 }
-                if(symbol_table[symIdx].kind != 2)
+                if (symbol_table[symIdx].kind != 2)
                 {
                     error_f(8);
                     return -1;
@@ -731,7 +742,7 @@ int statement_f(FILE *inf, char *token_str)
                 return 1;
             }
 
-            if(strcmp(cur_read_str, "write") == 0)
+            if (strcmp(cur_read_str, "write") == 0)
             {
                 cur_read_str = getNextToken(inf);
 
@@ -752,14 +763,14 @@ int term_f(FILE *inf, char *token_str)
 
     factor_f(inf, token_str);
 
-    while (strcmp(token_str, "*") == 0 || strcmp(token_str, "/") == 0)
+    cur_read_str = getNextToken(inf);
+
+    while (strcmp(cur_read_str, "*") == 0 || strcmp(cur_read_str, "/") == 0)
     {
-        if (strcmp(token_str, "*") == 0)
+        if (strcmp(cur_read_str, "*") == 0)
         {
             cur_read_str = getNextToken(inf);
-
-            factor_f(inf, token_str);
-
+            factor_f(inf, cur_read_str);
             printf("  %d    MUL    0    %d\n", ++lineCount, m);
         }
         else
@@ -800,17 +811,18 @@ int var_decla_f(FILE *inf)
         strcpy(symbol_table[si].name, cur_read_str);
         symbol_table[si].level = 0;
         symbol_table[si].val = 0;
-        addCount += 2;
-        symbol_table[si].addr += addCount;
+        symbol_table[si].addr = 3;
+        symbol_table[si].addr += si;
         si++;
 
-        if (c == ' ')
-            while ((c = fgetc(inf)) == ' ')
-                ;
         numVars++;
-    } while (c == ',');
 
-    if (c != ';')
+        fseek(inf, -1, SEEK_CUR);
+        cur_read_str = getNextToken(inf);
+
+    } while (strcmp(cur_read_str, ",") == 0);
+
+    if (strcmp(cur_read_str, ";") != 0)
     {
         error_f(6);
         return -1;
@@ -822,7 +834,7 @@ int var_decla_f(FILE *inf)
 
 void block_f(FILE *inf)
 {
-    char *cur_read_str; // cur_read_str identifier
+    char *cur_read_str;
     char c;
     int i = 0;
 
@@ -831,7 +843,7 @@ void block_f(FILE *inf)
 
         if (isalpha(c))
         {
-            cur_read_str[i++] = c;
+            fseek(inf, -1, SEEK_CUR);
             cur_read_str = getNextToken(inf);
 
             if (check_for_reserved(cur_read_str) == 28)
@@ -846,6 +858,7 @@ void block_f(FILE *inf)
             else if (check_for_reserved(cur_read_str) == 29)
             {
                 numVars = var_decla_f(inf);
+
                 if (numVars < 0)
                 {
                     return;
@@ -861,16 +874,15 @@ void block_f(FILE *inf)
             {
                 statement_f(inf, cur_read_str);
             }
-            break;
         }
+        else if(c == '.') break;
         else
         {
             continue;
         }
     }
-    //////////////////////////////     above is the variable declaration
 
     free(cur_read_str);
-    fclose(inf);
-}
+    fseek(inf, -1, SEEK_CUR);    
 
+}
