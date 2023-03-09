@@ -1,4 +1,5 @@
-var x, y;
-begin
-	z:= y * 2;
+const a = 1; 
+var b;
+begin 
+	b := a * 2;
 end.
