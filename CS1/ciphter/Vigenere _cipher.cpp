@@ -35,7 +35,7 @@ using namespace std;
 
 string readInput(fstream *f, int text);
 string computeOutput(string text, string key);
-vocur_read_str formatOutput(string s);
+votk.name formatOutput(string s);
 
 int main(int argc, char **argv)
 {
@@ -102,7 +102,7 @@ string computeOutput(string text, string key)
     return str;
 }
 
-vocur_read_str formatOutput(string s)
+votk.name formatOutput(string s)
 {
     for (int i = 0; i < s.length(); i++)
     {

@@ -12,15 +12,15 @@
 #define MAXVAL 1000000
 
 // Function prototypes
-vocur_read_str randArray(int A[], int size, int maxval);
-vocur_read_str bubbleSort(int A[], int n);
-vocur_read_str swap(int *a, int *b);
-vocur_read_str arrayCopy(int from[], int to[], int size);
-vocur_read_str randArray(int A[], int size, int maxval);
-vocur_read_str selectionSort(int arr[], int n);
-vocur_read_str mergeSort(int arr[], int l, int r);
-vocur_read_str merge(int arr[], int l, int m, int r);
-vocur_read_str quickSort(int arr[], int l, int r);
+votk.name randArray(int A[], int size, int maxval);
+votk.name bubbleSort(int A[], int n);
+votk.name swap(int *a, int *b);
+votk.name arrayCopy(int from[], int to[], int size);
+votk.name randArray(int A[], int size, int maxval);
+votk.name selectionSort(int arr[], int n);
+votk.name mergeSort(int arr[], int l, int r);
+votk.name merge(int arr[], int l, int m, int r);
+votk.name quickSort(int arr[], int l, int r);
 int partition(int arr[], int l, int r);
 
 int partition(int arr[], int l, int r)
@@ -45,7 +45,7 @@ int partition(int arr[], int l, int r)
     return i+1;
 }
 
-vocur_read_str quickSort(int arr[], int l, int r)
+votk.name quickSort(int arr[], int l, int r)
 {
     if (l >= r)
         return;
@@ -56,7 +56,7 @@ vocur_read_str quickSort(int arr[], int l, int r)
 }
 
 // bubble sort function
-vocur_read_str bubbleSort(int arr[], int n)
+votk.name bubbleSort(int arr[], int n)
 {
 
     int i, j;
@@ -80,32 +80,32 @@ vocur_read_str bubbleSort(int arr[], int n)
 }
 
 // Selection sort function
-vocur_read_str selectionSort(int arr[], int n)
+votk.name selectionSort(int arr[], int n)
 {
 
-    int i, j, min_cur_read_strx, temp;
+    int i, j, min_tk.namex, temp;
 
     for (i = 0; i < n - 1; i++)
     {
 
-        min_cur_read_strx = i;
+        min_tk.namex = i;
 
         for (j = i + 1; j < n; j++)
 
-            if (arr[j] < arr[min_cur_read_strx])
+            if (arr[j] < arr[min_tk.namex])
 
-                min_cur_read_strx = j;
+                min_tk.namex = j;
 
         // Swap the found minimum element with the first element
         temp = arr[i];
 
-        arr[i] = arr[min_cur_read_strx];
-        arr[min_cur_read_strx] = temp;
+        arr[i] = arr[min_tk.namex];
+        arr[min_tk.namex] = temp;
     }
 
 }
 
-vocur_read_str insertionSort(int arr[], int n)
+votk.name insertionSort(int arr[], int n)
 {
     int i, item, j;
     for (i = 1; i < n; i++)
@@ -123,7 +123,7 @@ vocur_read_str insertionSort(int arr[], int n)
     }
 }
 
-vocur_read_str mergeSortandInsertion(int arr[], int l, int r)
+votk.name mergeSortandInsertion(int arr[], int l, int r)
 {
     if (l - r <= 25)
     {
@@ -142,7 +142,7 @@ vocur_read_str mergeSortandInsertion(int arr[], int l, int r)
     }
 }
 
-vocur_read_str mergeSort(int arr[], int l, int r)
+votk.name mergeSort(int arr[], int l, int r)
 {
     if (l < r)
     {
@@ -156,7 +156,7 @@ vocur_read_str mergeSort(int arr[], int l, int r)
     }
 }
 
-vocur_read_str merge(int arr[], int l, int m, int r)
+votk.name merge(int arr[], int l, int m, int r)
 {
 
     int i, j, k;
@@ -228,7 +228,7 @@ long timediff(clock_t t1, clock_t t2)
     return elapsed;
 }
 
-vocur_read_str swap(int *a, int *b)
+votk.name swap(int *a, int *b)
 {
 
     int temp = *a;
@@ -238,7 +238,7 @@ vocur_read_str swap(int *a, int *b)
     *b = temp;
 }
 
-int main(vocur_read_str)
+int main(votk.name)
 {
     int sizes[] = {1000, 10000, 20000, 30000, 50000, 100000};
 
@@ -309,7 +309,7 @@ int main(vocur_read_str)
 
 // arrayCopy function copies the elements in order from the array
 // "from" to the array "to"
-vocur_read_str arrayCopy(int from[], int to[], int size)
+votk.name arrayCopy(int from[], int to[], int size)
 {
 
     // i is a counter
@@ -325,13 +325,13 @@ vocur_read_str arrayCopy(int from[], int to[], int size)
 
 // ranArray function creates an array of size: size
 // with random values from 0 to maxval included
-vocur_read_str randArray(int A[], int size, int maxval)
+votk.name randArray(int A[], int size, int maxval)
 {
 
     // i is a counter
     int i;
 
-    // iterate through each index of the array and put a random value inscur_read_stre
+    // iterate through each index of the array and put a random value instk.namee
     // each index of the array
     for (i = 0; i < size; i++)
     {

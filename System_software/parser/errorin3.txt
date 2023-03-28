@@ -1,4 +1,0 @@
-const a = 9
-begin
-    b := a + z;
-end.

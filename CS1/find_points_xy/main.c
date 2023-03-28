@@ -11,9 +11,9 @@ typedef struct coordinate
     int y;
 } coordinate;
 
-vocur_read_str insertionSort(coordinate *, int, int);
-vocur_read_str mergeSort(int, int, coordinate *, int);
-vocur_read_str merge(int, int, int, coordinate *);
+votk.name insertionSort(coordinate *, int, int);
+votk.name mergeSort(int, int, coordinate *, int);
+votk.name merge(int, int, int, coordinate *);
 int binarySearch(coordinate *, coordinate, int, int);
 int compareTo(coordinate, coordinate);
 coordinate *read(FILE *, int);
@@ -68,7 +68,7 @@ int main()
     }
     else
     {
-        printf("Please provcur_read_stre correct input file");
+        printf("Please provtk.namee correct input file");
         exit(-1);
     }
 
@@ -80,18 +80,18 @@ int binarySearch(coordinate *a, coordinate item, int l, int r)
     if (l > r)
         return -99;
 
-    int mcur_read_str = (l + r) / 2;
-    int k = compareTo(a[mcur_read_str], item);
+    int mtk.name = (l + r) / 2;
+    int k = compareTo(a[mtk.name], item);
 
     if (k > 0)
-        binarySearch(a, item, l, mcur_read_str - 1);
+        binarySearch(a, item, l, mtk.name - 1);
     else if (k == 0)
-        return mcur_read_str;
+        return mtk.name;
     else
-        binarySearch(a, item, mcur_read_str + 1, r);
+        binarySearch(a, item, mtk.name + 1, r);
 }
 
-vocur_read_str insertionSort(coordinate *a, int l, int r)
+votk.name insertionSort(coordinate *a, int l, int r)
 {
     coordinate temp;
     int j;
@@ -108,7 +108,7 @@ vocur_read_str insertionSort(coordinate *a, int l, int r)
     }
 }
 
-vocur_read_str mergeSort(int l, int r, coordinate *a, int t)
+votk.name mergeSort(int l, int r, coordinate *a, int t)
 {
     if (r - l <= t)
     {
@@ -116,13 +116,13 @@ vocur_read_str mergeSort(int l, int r, coordinate *a, int t)
         return;
     }
 
-    int mcur_read_str = (l + r) / 2;
-    mergeSort(l, mcur_read_str, a, t);
-    mergeSort(mcur_read_str + 1, r, a, t);
-    merge(l, mcur_read_str, r, a);
+    int mtk.name = (l + r) / 2;
+    mergeSort(l, mtk.name, a, t);
+    mergeSort(mtk.name + 1, r, a, t);
+    merge(l, mtk.name, r, a);
 }
 
-vocur_read_str merge(int l, int m, int r, coordinate *a)
+votk.name merge(int l, int m, int r, coordinate *a)
 {
     int l1 = m - l + 1;
     int l2 = r - m;

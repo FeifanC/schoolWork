@@ -12,7 +12,7 @@
 
 #define NORW 15      /* number of reserved words */
 #define IMAX 32767   /* maximum integer value */
-#define CMAX 20      /* maximum number of chars for cur_read_strents */
+#define CMAX 20      /* maximum number of chars for tk.nameents */
 #define STRMAX 256   /* maximum length of strings */
 #define JUSTBIG 1000 /*just a big number for the arrays size*/
 #define ERROR 999    /*error code*/
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
     else
     {
 
-        char *cur_read_str = malloc(CMAX * sizeof(char));           // cur_read_strentifier
+        char *tk.name = malloc(CMAX * sizeof(char));           // tk.nameentifier
         int *final_list_num = (int *)malloc(JUSTBIG * sizeof(int)); // Final list of numbers
         char **list_var_name = malloc(JUSTBIG * sizeof(char));      // list of strings
         int *list_var_nums = malloc(JUSTBIG * sizeof(int));         // name of variables.
@@ -173,26 +173,26 @@ int main(int argc, char **argv)
             //Check if next character is a letter or a number.
             if (isalpha(c))
             {
-                cur_read_str[i++] = c;
+                tk.name[i++] = c;
                 while ((c = fgetc(inf)) != ' ' && (!DFS_specialCh(c) && (c != '\n')))
                 {
-                    cur_read_str[i++] = c;
+                    tk.name[i++] = c;
                 }
-                cur_read_str[i] = '\0';
+                tk.name[i] = '\0';
                 i = 0;
 
-                if (check_for_reserved(cur_read_str))
+                if (check_for_reserved(tk.name))
                 {
-                    printf("%s      %d\n", cur_read_str, check_for_reserved(cur_read_str));
-                    final_list_num[k++] = check_for_reserved(cur_read_str);
+                    printf("%s      %d\n", tk.name, check_for_reserved(tk.name));
+                    final_list_num[k++] = check_for_reserved(tk.name);
                 }
                 else
                 {
-                    printf("%s      %d\n", cur_read_str, DFS_id(cur_read_str));
-                    final_list_num[k++] = DFS_id(cur_read_str);
+                    printf("%s      %d\n", tk.name, DFS_id(tk.name));
+                    final_list_num[k++] = DFS_id(tk.name);
                     // Allocation new array to keep track of the variables in order.
-                    list_var_name[n] = malloc((strlen(cur_read_str) + 1) * sizeof(char));
-                    strcpy(list_var_name[n], cur_read_str);
+                    list_var_name[n] = malloc((strlen(tk.name) + 1) * sizeof(char));
+                    strcpy(list_var_name[n], tk.name);
 
                     n++;
                 }
@@ -205,29 +205,29 @@ int main(int argc, char **argv)
             }
             else if (c == ':')
             {
-                cur_read_str[i++] = c;
+                tk.name[i++] = c;
                 c = fgetc(inf);
-                cur_read_str[i++] = c;
-                cur_read_str[i] = '\0';
+                tk.name[i++] = c;
+                tk.name[i] = '\0';
 
-                printf("%s      %d\n", cur_read_str, check_mulSymbol(cur_read_str));
-                final_list_num[k++] = check_mulSymbol(cur_read_str);
+                printf("%s      %d\n", tk.name, check_mulSymbol(tk.name));
+                final_list_num[k++] = check_mulSymbol(tk.name);
                 i = 0;
             }
             //Check weather is a digit if it is check the statement.
             else if (isdigit(c))
             {
-                cur_read_str[i++] = c;
+                tk.name[i++] = c;
                 while (((c = fgetc(inf)) != ' ') && (!DFS_specialCh(c)) && (c != '\n'))
                 {
-                    cur_read_str[i++] = c;
+                    tk.name[i++] = c;
                 }
 
-                cur_read_str[i] = '\0';
+                tk.name[i] = '\0';
                 i = 0;
 
-                printf("%s      %d\n", cur_read_str, DFS_num(cur_read_str));
-                final_list_num[k++] = DFS_num(cur_read_str);
+                printf("%s      %d\n", tk.name, DFS_num(tk.name));
+                final_list_num[k++] = DFS_num(tk.name);
 
                 if (DFS_specialCh(c))
                 {
@@ -235,7 +235,7 @@ int main(int argc, char **argv)
                     final_list_num[k++] = DFS_specialCh(c);
                 }
 
-                list_var_nums[p++] = atoi(cur_read_str);
+                list_var_nums[p++] = atoi(tk.name);
             }
             else
             {
@@ -244,10 +244,10 @@ int main(int argc, char **argv)
 
                 if (c == '\\' || c == '/') // checking comment symbol
                 {
-                    cur_read_str[i++] = c;
-                    cur_read_str[i++] = fgetc(inf);
-                    cur_read_str[i] = '\0';
-                    if ((strcmp(cur_read_str, "\\*") == 0) || (strcmp(cur_read_str, "*/") == 0) || (strcmp(cur_read_str, "\\\\") == 0))
+                    tk.name[i++] = c;
+                    tk.name[i++] = fgetc(inf);
+                    tk.name[i] = '\0';
+                    if ((strcmp(tk.name, "\\*") == 0) || (strcmp(tk.name, "*/") == 0) || (strcmp(tk.name, "\\\\") == 0))
                     {
                         i = 0;
                         continue;
@@ -278,7 +278,7 @@ int main(int argc, char **argv)
             }
         }
 
-        free(cur_read_str);
+        free(tk.name);
         free(final_list_num);
         for (int z = 0; z < JUSTBIG; z++)
             free(list_var_nums);

@@ -12,14 +12,14 @@ static MEM_LEAK * ptr_start = NULL;
 static MEM_LEAK * ptr_next =  NULL;
 
 
-vocur_read_str * xmalloc (unsigned int size, const char * file, unsigned int line);
-vocur_read_str * xcalloc (unsigned int elements, unsigned int size, const char * file, unsigned int line);
-vocur_read_str xfree(vocur_read_str * mem_ref);
+votk.name * xmalloc (unsigned int size, const char * file, unsigned int line);
+votk.name * xcalloc (unsigned int elements, unsigned int size, const char * file, unsigned int line);
+votk.name xfree(votk.name * mem_ref);
 /*
  * adds allocated memory info. into the list
  *
  */
-vocur_read_str add(MEM_INFO alloc_info)
+votk.name add(MEM_INFO alloc_info)
 {
 
 	MEM_LEAK * mem_leak_info = NULL;
@@ -46,7 +46,7 @@ vocur_read_str add(MEM_INFO alloc_info)
  * erases memory info. from the list
  *
  */
-vocur_read_str erase(unsigned pos)
+votk.name erase(unsigned pos)
 {
 
 	unsigned index = 0;
@@ -77,7 +77,7 @@ vocur_read_str erase(unsigned pos)
 /*
  * deletes all the elements from the list
  */
-vocur_read_str clear()
+votk.name clear()
 {
 	MEM_LEAK * temp = ptr_start;
 	MEM_LEAK * alloc_info = ptr_start;
@@ -93,9 +93,9 @@ vocur_read_str clear()
 /*
  * replacement of malloc
  */
-vocur_read_str * xmalloc (unsigned int size, const char * file, unsigned int line)
+votk.name * xmalloc (unsigned int size, const char * file, unsigned int line)
 {
-	vocur_read_str * ptr = malloc (size);
+	votk.name * ptr = malloc (size);
 	if (ptr != NULL)
 	{
 		add_mem_info(ptr, size, file, line);
@@ -106,10 +106,10 @@ vocur_read_str * xmalloc (unsigned int size, const char * file, unsigned int lin
 /*
  * replacement of calloc
  */
-vocur_read_str * xcalloc (unsigned int elements, unsigned int size, const char * file, unsigned int line)
+votk.name * xcalloc (unsigned int elements, unsigned int size, const char * file, unsigned int line)
 {
 	unsigned total_size;
-	vocur_read_str * ptr = calloc(elements , size);
+	votk.name * ptr = calloc(elements , size);
 	if(ptr != NULL)
 	{
 		total_size = elements * size;
@@ -122,7 +122,7 @@ vocur_read_str * xcalloc (unsigned int elements, unsigned int size, const char *
 /*
  * replacement of free
  */
-vocur_read_str xfree(vocur_read_str * mem_ref)
+votk.name xfree(votk.name * mem_ref)
 {
 	remove_mem_info(mem_ref);
 	free(mem_ref);
@@ -132,7 +132,7 @@ vocur_read_str xfree(vocur_read_str * mem_ref)
  * gets the allocated memory info and adds it to a list
  *
  */
-vocur_read_str add_mem_info (vocur_read_str * mem_ref, unsigned int size,  const char * file, unsigned int line)
+votk.name add_mem_info (votk.name * mem_ref, unsigned int size,  const char * file, unsigned int line)
 {
 	MEM_INFO mem_alloc_info;
 
@@ -151,7 +151,7 @@ vocur_read_str add_mem_info (vocur_read_str * mem_ref, unsigned int size,  const
  * if the allocated memory info is part of the list, removes it
  *
  */
-vocur_read_str remove_mem_info (vocur_read_str * mem_ref)
+votk.name remove_mem_info (votk.name * mem_ref)
 {
 	unsigned short index;
 	MEM_LEAK  * leak_info = ptr_start;
@@ -170,7 +170,7 @@ vocur_read_str remove_mem_info (vocur_read_str * mem_ref)
 /*
  * writes all info of the unallocated memory into a file
  */
-vocur_read_str report_mem_leak(vocur_read_str)
+votk.name report_mem_leak(votk.name)
 {
 	unsigned short index;
 	MEM_LEAK * leak_info;

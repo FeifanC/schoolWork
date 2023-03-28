@@ -16,8 +16,8 @@ typedef struct student
 } student;
 
 student **readCourses(FILE *in, int *C, int *N, int *M);
-vocur_read_str printHighestTotal(FILE *out, student **courseList, int C, int N, int M);
-vocur_read_str release_memroy(student **courseList, int C, int N, int M);
+votk.name printHighestTotal(FILE *out, student **courseList, int C, int N, int M);
+votk.name release_memroy(student **courseList, int C, int N, int M);
 
 int main()
 {
@@ -42,7 +42,7 @@ int main()
     }
     else
     {
-        printf("Please provcur_read_stre correct input file");
+        printf("Please provtk.namee correct input file");
         exit(-1);
     }
 
@@ -84,7 +84,7 @@ student **readCourses(FILE *in, int *C, int *N, int *M)
     return stus;
 }
 
-vocur_read_str printHighestTotal(FILE *out, student **courseList, int C, int N, int M)
+votk.name printHighestTotal(FILE *out, student **courseList, int C, int N, int M)
 {
     int maxTotal = -1;
     int x, y;
@@ -122,7 +122,7 @@ vocur_read_str printHighestTotal(FILE *out, student **courseList, int C, int N, 
     printf("Course number: %d\n", x + 1);
 }
 
-vocur_read_str release_memroy(student **courseList, int C, int N, int M)
+votk.name release_memroy(student **courseList, int C, int N, int M)
 {
     for (int i = 0; i < C; i++)
     {

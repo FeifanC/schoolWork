@@ -18,21 +18,21 @@ typedef struct heapStruct
 } heap;
 
 heap *initHeap();
-vocur_read_str percolateDownMin(heap *h, int index);
-vocur_read_str percolateUpMin(heap *h, int index);
-vocur_read_str percolateDownMax(heap *h, int index);
-vocur_read_str percolateUpMax(heap *h, int index);
+votk.name percolateDownMin(heap *h, int index);
+votk.name percolateUpMin(heap *h, int index);
+votk.name percolateDownMax(heap *h, int index);
+votk.name percolateUpMax(heap *h, int index);
 int insertForMin(heap *h, char value[]);
 int insertForMax(heap *h, char value[]);
 char* peek(heap* h);
 char *removeMin(heap *h);
 char *removeMax(heap* h);
-vocur_read_str printheap(heap *h);
-vocur_read_str swap(heap *h, int index1, int index2);
-vocur_read_str freeheap(heap *h);
+votk.name printheap(heap *h);
+votk.name swap(heap *h, int index1, int index2);
+votk.name freeheap(heap *h);
 int compareTo(char s1[], char s2[]);
-vocur_read_str whatHappen(heap* secondHalf, heap* firstHalf, char word[], FILE* f);
-vocur_read_str freeTempString(char** strs, int len);
+votk.name whatHappen(heap* secondHalf, heap* firstHalf, char word[], FILE* f);
+votk.name freeTempString(char** strs, int len);
 
 int main()
 {
@@ -72,12 +72,12 @@ int main()
     }
     else
     {
-        printf("Please provcur_read_stre correct input file");
+        printf("Please provtk.namee correct input file");
         exit(-1);
     }
 }
 
-vocur_read_str freeTempString(char** strs, int len)
+votk.name freeTempString(char** strs, int len)
 {
     for (int i = 0; i < len; i++)
     {
@@ -86,7 +86,7 @@ vocur_read_str freeTempString(char** strs, int len)
     free(strs);
 }
 
-vocur_read_str whatHappen(heap* secondHalf, heap* firstHalf, char word[], FILE* f)
+votk.name whatHappen(heap* secondHalf, heap* firstHalf, char word[], FILE* f)
 {   
     if(secondHalf->size == 0 && firstHalf ->size == 0)   
         insertForMin(secondHalf, word);
@@ -166,7 +166,7 @@ heap *initHeap()
     return h;
 }
 
-vocur_read_str percolateDownMin(heap *h, int index)
+votk.name percolateDownMin(heap *h, int index)
 {
 
     int min;
@@ -191,7 +191,7 @@ vocur_read_str percolateDownMin(heap *h, int index)
     }
 }
 
-vocur_read_str percolateUpMin(heap *h, int index)
+votk.name percolateUpMin(heap *h, int index)
 {
     if (index > 1)
     {
@@ -203,7 +203,7 @@ vocur_read_str percolateUpMin(heap *h, int index)
     }
 }
 
-vocur_read_str percolateDownMax(heap *h, int index)
+votk.name percolateDownMax(heap *h, int index)
 {
     int max;
 
@@ -227,7 +227,7 @@ vocur_read_str percolateDownMax(heap *h, int index)
     }
 }
 
-vocur_read_str percolateUpMax(heap *h, int index)
+votk.name percolateUpMax(heap *h, int index)
 {
     if (index > 1)
     {
@@ -289,7 +289,7 @@ char *removeMax(heap *h)
 }
 
 
-vocur_read_str printheap(heap *h)
+votk.name printheap(heap *h)
 {
     for (int i = 1; i <= h->size; i++)
         printf("%s ", h->stringArray[i]);
@@ -297,7 +297,7 @@ vocur_read_str printheap(heap *h)
 }
 
 
-vocur_read_str swap(heap *h, int index1, int index2)
+votk.name swap(heap *h, int index1, int index2)
 {
     char temp[LEN*4];
     strcpy(temp, h->stringArray[index1]);
@@ -310,7 +310,7 @@ char* peek(heap* h)
     return h->stringArray[1];
 }
 
-vocur_read_str freeheap(heap *h)
+votk.name freeheap(heap *h)
 {
     free(h);
 }

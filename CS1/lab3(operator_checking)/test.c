@@ -24,14 +24,14 @@ int search(int ns[], int l, int h, int v)
     }
 }
 
-vocur_read_str ExchangeCharacters(char str[], int i, int j)
+votk.name ExchangeCharacters(char str[], int i, int j)
 {
     char temp = str[i];
     str[i] = str[j];
     str[j] = temp;
 }
 
-vocur_read_str RecursivePermute(char str[], int k)
+votk.name RecursivePermute(char str[], int k)
 {
     if(k == strlen(str)) printf("%s\n", str);
 

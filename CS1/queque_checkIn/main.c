@@ -30,8 +30,8 @@ typedef struct queque
     int size;
 } queque;
 
-vocur_read_str Enqueque(Customer *, queque *);
-vocur_read_str displayQueque(queque *);
+votk.name Enqueque(Customer *, queque *);
+votk.name displayQueque(queque *);
 Customer *Dequeque(queque *);
 Customer *Peek();
 int Empty(queque *);
@@ -101,7 +101,7 @@ int main()
     }
     else
     {
-        printf("Please provcur_read_stre correct input file");
+        printf("Please provtk.namee correct input file");
         exit(-1);
     }
 
@@ -121,7 +121,7 @@ Customer *createCustomer(char *name, int numOfTickets, int lineNum, int enterTim
     return c;
 }
 
-vocur_read_str Enqueque(Customer *c, queque *q)
+votk.name Enqueque(Customer *c, queque *q)
 {
     if (q->size == 0)
     {

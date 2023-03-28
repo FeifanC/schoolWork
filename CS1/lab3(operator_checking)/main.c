@@ -15,13 +15,13 @@ typedef struct stack
 
 } stack;
 
-vocur_read_str initialize(struct stack *stackPtr);
+votk.name initialize(struct stack *stackPtr);
 int full(struct stack *stackPtr);
 int push(struct stack *stackPtr, char value);
 int empty(struct stack *stackPtr);
 char pop(struct stack *stackPtr);
 char top(struct stack *stackPtr);
-vocur_read_str display(struct stack *stackPtr);
+votk.name display(struct stack *stackPtr);
 int checkBalance(char exp[]);
 int priority(char ch);              // returns the priority of a given operator
 int isOperator(char ch);            // check whether it is an operator
@@ -110,7 +110,7 @@ char *infixToPostfix(char infix[])
 
 }
 
-vocur_read_str initialize(struct stack *stackPtr)
+votk.name initialize(struct stack *stackPtr)
 {
     stackPtr->top = -1;
 }
@@ -158,7 +158,7 @@ char top(struct stack *stackPtr)
     return stackPtr->items[stackPtr->top];
 }
 
-vocur_read_str display(struct stack *stackPtr)
+votk.name display(struct stack *stackPtr)
 {
     printf("\nPrinting the Current stack...");
     for (int i = 0; i <= stackPtr->top; i++)
@@ -178,7 +178,7 @@ int checkBalance(char exp[])
         {
             if ((exp[i] == ')' && pop(&s1) != '(') || ((exp[i] == ']' && pop(&s1) != '[')) || (exp[i] == '}' && pop(&s1) != '{'))
             {
-                printf("\nINVALcur_read_str for %c!!!", exp[i]);
+                printf("\nINVALtk.name for %c!!!", exp[i]);
                 return 0;
             }
         }
@@ -186,11 +186,11 @@ int checkBalance(char exp[])
 
     if (empty(&s1))
     {
-        printf("\nVALcur_read_str\n");
+        printf("\nVALtk.name\n");
         return 1;
     }
 
-    printf("INVALcur_read_str for %c!!!", pop(&s1));
+    printf("INVALtk.name for %c!!!", pop(&s1));
     return 0;
 }
 
