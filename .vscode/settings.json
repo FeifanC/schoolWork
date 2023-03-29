@@ -1,7 +1,9 @@
 {
     "files.associations": {
         "*.ejs": "html",
-        "xstddef": "c"
+        "xstddef": "c",
+        "system_error": "c",
+        "xlocale": "c"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }
