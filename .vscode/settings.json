@@ -3,7 +3,8 @@
         "*.ejs": "html",
         "xstddef": "c",
         "system_error": "c",
-        "xlocale": "c"
+        "xlocale": "c",
+        "stdlib.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }

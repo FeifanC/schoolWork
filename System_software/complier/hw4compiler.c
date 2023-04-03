@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+// cx = ti
+// fseek(inf, -1, SEEK_CUR);
+
 #define NORW 15      /* number of reserved words */
 #define IMAX 32767   /* maximum integer value */
 #define CMAX 20      /* maximum number of chars for tk.name */
@@ -18,6 +21,7 @@
 #define ERROR 999    /*error code*/
 #define MAX_SYMBOL_TABLE_SIZE 500
 #define CODE_SIZE 500
+#define ERRORCODE -1115111
 
 typedef struct
 {
@@ -29,24 +33,30 @@ typedef struct
     int mark;      // To indicate unavailable or deleted
 } symbol;
 
-typedef struct    //output struct for printing op codes
+typedef struct // output struct for printing op codes
 {
-    char op[4];
-    int r;
+    char op[6];
     int m;
-    int l; 
-} text;     
+    int l;
+} text;
 
-text tex[JUSTBIG];
+typedef struct
+{
+    char *name;
+} token;
 
 symbol symbol_table[MAX_SYMBOL_TABLE_SIZE];
+text tex[JUSTBIG]; // aka code
+token tk;          // current token
 
-int si = 0;        // symbol table index
-int lineCount = 0; // line count for the input program
-int numVars = -1;
-int m = 3;    
-int ti = 0;   //index for op lines
+int si = -1; // symbol table index
+int m = 3;   // aka tx
+int ti = -1; // index for op lines aka cx
 int l = 0;
+int commentFlag = 0;
+int condFlag = 1;
+char fileName[JUSTBIG];
+FILE *outFile;
 
 void print_symb_table();
 int symb_table_check(char *str);
@@ -55,18 +65,22 @@ int check_for_reserved(char *word);
 int DFS_id(char *c);
 int DFS_num(char *c);
 char *getNextToken(FILE *inf);
-int check_mulSymbol(char *c);  //checking :=
+int check_mulSymbol(char *c); // checking :=
 void error_f(int list_num);
 int const_decla_f(FILE *inf);
-int expression_f(FILE *inf, char *token_str);
-int factor_f(FILE *inf, char *token_str);
-int condition_f(FILE *inf, char *token_str);
-int statement_f(FILE *inf, char *token_str);
-int term_f(FILE *inf, char *token_str);
+int expression_f(FILE *inf);
+int factor_f(FILE *inf);
+int condition_f(FILE *inf);
+int statement_f(FILE *inf);
+int term_f(FILE *inf);
 int var_decla_f(FILE *inf);
 int block_f(FILE *inf);
 void print_Emit();
-void emit(char op[4], int l, int m);   //function used to send different op codes to array
+int print_assemblyCode();
+void print_vm();
+int proc_decla_f(FILE *inf);
+void enter(int kind, char *name, int val, int level, int addr);
+void emit(char op[4], int l, int m); // function used to send different op codes to array
 
 int main(int argc, char **argv)
 {
@@ -75,31 +89,168 @@ int main(int argc, char **argv)
     inf = fopen(argv[1], "r");
     if (inf == NULL)
     {
-        printf("Error: <opening file>"); 
+        printf("Error: <opening file>");
         exit(1);
     }
     else
     {
-        printf("what");
-        if (block_f(inf) != -1)
+        strcpy(fileName, argv[1]);
+        if (block_f(inf) != ERRORCODE)
         {
-            
-            if (fgetc(inf) != '.')
+            if (strcmp(tk.name, ".") != 0)
             {
                 error_f(1);
             }
-            print_Emit();
-        }
 
+            // print_vm();
+            print_assemblyCode();
+        }
         fclose(inf);
     }
 }
 
+int print_assemblyCode()
+{
+    outFile = fopen("elf.txt", "w");
+
+    printf("Assembly Code: \n");
+    for (int a = 0; a < ti; a++)
+    {
+        if (strcmp(tex[a].op, "LIT") == 0)
+        {
+            fprintf(outFile, "1  0  %d", tex[a].m);
+            printf("1  0  %d", tex[a].m);
+        }
+        else if (strcmp(tex[a].op, "ADD") == 0)
+        {
+            fprintf(outFile, "2  0  1");
+            printf("2  0  1");
+        }
+        else if (strcmp(tex[a].op, "SUB") == 0)
+        {
+            fprintf(outFile, "2  0  2");
+            printf("2  0  2");
+        }
+        else if (strcmp(tex[a].op, "MUL") == 0)
+        {
+            fprintf(outFile, "2  0  3");
+            printf("2  0  3");
+        }
+        else if (strcmp(tex[a].op, "DIV") == 0)
+        {
+            fprintf(outFile, "2  0  4");
+            printf("2  0  4");
+        }
+        else if (strcmp(tex[a].op, "EQL") == 0)
+        {
+            fprintf(outFile, "2  0  5");
+            printf("2  0  5");
+        }
+
+        else if (strcmp(tex[a].op, "NEQ") == 0)
+        {
+            fprintf(outFile, "2  0  6");
+            printf("2  0  6");
+        }
+
+        else if (strcmp(tex[a].op, "LSS") == 0)
+        {
+            fprintf(outFile, "2  0  7");
+            printf("2  0  7");
+        }
+
+        else if (strcmp(tex[a].op, "LEQ") == 0)
+        {
+            fprintf(outFile, "2  0  8");
+            printf("2  0  8");
+        }
+
+        else if (strcmp(tex[a].op, "GTR") == 0)
+        {
+            fprintf(outFile, "2  0  9");
+            printf("2  0  9");
+        }
+        else if (strcmp(tex[a].op, "GEQ") == 0)
+        {
+            fprintf(outFile, "2  0  10");
+            printf("2  0  10");
+        }
+        else if (strcmp(tex[a].op, "ODD") == 0)
+        {
+            fprintf(outFile, "2  0  11");
+            printf("2  0  11");
+        }
+        else if (strcmp(tex[a].op, "LOD") == 0)
+        {
+            fprintf(outFile, "3  %d  %d", tex[a].l, tex[a].m);
+            printf("3  %d  %d", tex[a].l, tex[a].m);
+        }
+        else if (strcmp(tex[a].op, "STO") == 0)
+        {
+            fprintf(outFile, "4  %d  %d", tex[a].l, tex[a].m);
+            printf("4  %d  %d", tex[a].l, tex[a].m);
+        }
+        else if (strcmp(tex[a].op, "CAL") == 0)
+        {
+            fprintf(outFile, "5  %d  %d", tex[a].l, tex[a].m);
+            printf("5  %d  %d", tex[a].l, tex[a].m);
+        }
+        else if (strcmp(tex[a].op, "INC") == 0)
+        {
+            fprintf(outFile, "6  0  %d", tex[a].m);
+            printf("6  0  %d", tex[a].m);
+        }
+        else if (strcmp(tex[a].op, "JMP") == 0)
+        {
+            fprintf(outFile, "7  0  %d", tex[a].m);
+            printf("7  0  %d", tex[a].m);
+        }
+        else if (strcmp(tex[a].op, "JPC") == 0)
+
+        {
+            fprintf(outFile, "8  0  %d", tex[a].m);
+            printf("8  0  %d", tex[a].m);
+        }
+        else if (strcmp(tex[a].op, "SYS") == 0)
+        {
+            fprintf(outFile, "9  0  3");
+            printf("9  0  3");
+        }
+        else if (strcmp(tex[a].op, "READ") == 0)
+        {
+            fprintf(outFile, "9  0  2");
+            printf("9  0  2");
+        }
+        else
+        {
+            fprintf(outFile, "9  0  1");
+            printf("9  0  1");
+        }
+
+        printf("\n");
+        fprintf(outFile, "\n");
+    }
+}
+
+void print_vm()
+{
+    FILE *inf = fopen(fileName, "r");
+    char c;
+
+    while ((c = fgetc(inf)) != EOF)
+    {
+        printf("%c", c);
+    }
+
+    printf("\nNo errors, program is syntactically correct\n\n");
+}
+
 void print_Emit()
 {
+    int lineCount = 0;
+
     printf("Assembly Code: \n");
     printf("Line    OP    L    M\n");
-    printf("  0    JMP    0    3\n");
     for (int i = 0; i < ti; i++)
     {
         if (strcmp(tex[i].op, "call") == 0 || strcmp(tex[i].op, "precedure") == 0 || strcmp(tex[i].op, "else") == 0)
@@ -111,16 +262,15 @@ void print_Emit()
     }
 
     printf("  %d    SYS    %d    %d\n", lineCount, l, m);
-
-    printf("\nSymbol Table:\n");
-    printf("Kind | Name        | Value | Level | Address | Mark\n");
-    printf("---------------------------------------------------\n");
-    printf("   3 |        main |     0 |     0 |     3 |     1\n");
-    print_symb_table();
 }
 
 void print_symb_table()
 {
+    printf("\nSymbol Table:\n");
+    printf("Kind | Name        | Value | Level | Address | Mark\n");
+    printf("---------------------------------------------------\n");
+    printf("   3 |        main |     0 |     0 |     3 |     1\n");
+
     for (int i = 0; i < si; i++)
     {
         printf("   %d |           %s |     %d |     %d |     %d |     1\n", symbol_table[i].kind, symbol_table[i].name, symbol_table[i].val, symbol_table[i].level, symbol_table[i].addr);
@@ -129,12 +279,21 @@ void print_symb_table()
 
 int symb_table_check(char *str)
 {
-    for (int i = 0; i < si; i++)
+    int curIndex = -1;
+    int maxLevel = -1;
+
+    for (int i = 0; i < ti; i++)
     {
-        if (strcmp(str, symbol_table[i].name) == 0)
+        if (strcmp(str, symbol_table[i].name) == 0 && (symbol_table[i].level == l))
             return i;
+        if (strcmp(str, symbol_table[i].name) == 0 && symbol_table[i].level > maxLevel)
+        {
+            curIndex = i;
+            maxLevel = symbol_table[i].level;
+        }
     }
-    return -1;
+
+    return curIndex;
 }
 
 int DFS_specialCh(char letter)
@@ -253,7 +412,7 @@ int DFS_num(char *c)
 char *getNextToken(FILE *inf)
 {
     char c;
-    char *tk.name = malloc(sizeof(char) * CMAX);
+    char *cur_read_str = malloc(sizeof(char) * CMAX);
     int i = 0;
 
     if ((c = fgetc(inf)) == ' ' || (c == '\n') || (c == '\t'))
@@ -261,24 +420,43 @@ char *getNextToken(FILE *inf)
             ;
 
     if (c == ':' && ((c = fgetc(inf)) == '='))
+    {
+
         return ":=";
+    }
+
+    if (c == '/' && ((c = fgetc(inf)) == '/'))
+    {
+        commentFlag = 1;
+        while ((c = fgetc(inf)) != '\n')
+            ;
+    }
+
+    if (commentFlag == 1)
+    {
+        commentFlag = 0;
+        fseek(inf, -1, SEEK_CUR);
+    }
 
     if (DFS_specialCh(c))
     {
-        char *ch_str = malloc(sizeof(char) * 2);
-        ch_str[0] = c;
-        ch_str[1] = '\0';
-        return ch_str;
+        cur_read_str[0] = c;
+        cur_read_str[1] = '\0';
+        return cur_read_str;
     }
 
-    while (!DFS_specialCh(c) && (c != '\n') && (c != ' '))
+    while (!DFS_specialCh(c) && (c != '\n') && (c != ' ') && (c != ':'))
     {
-        tk.name[i++] = c;
+
+        cur_read_str[i++] = c;
         c = fgetc(inf);
     }
 
-    tk.name[i] = '\0';
-    return tk.name;
+    cur_read_str[i] = '\0';
+
+    fseek(inf, -1, SEEK_CUR);
+
+    return cur_read_str;
 }
 
 int check_mulSymbol(char *c)
@@ -289,104 +467,120 @@ int check_mulSymbol(char *c)
 }
 
 void error_f(int list_num)
-{ // finish the error message follow the instruction
-    printf("Error: <");
+{
+    FILE *inf = fopen(fileName, "r");
+    char c;
+
+    while ((c = fgetc(inf)) != EOF)
+    {
+        printf("%c", c);
+    }
+
+    printf("\nError: Error number ");
     if (list_num == 1)
     {
-        printf("Program must end with period>\n");
+        printf("9: Period expected\n");
         exit(1);
     }
     else if (list_num == 2)
     {
-        printf("const, var, and read keywords must be followed by identifier>\n");
+        printf("4: const, var, Procedure keywords must be followed by identifier\n");
         exit(1);
     }
     else if (list_num == 3)
     {
-        printf("symbol name has already been declared>\n");
+        printf(": symbol name has already been declared\n");
         exit(1);
     }
     else if (list_num == 4)
     {
-        printf("constants must be assigned with =>\n");
+        printf(": constants must be assigned with =\n");
         exit(1);
     }
     else if (list_num == 5)
     {
-        printf("constants must be assigned an integer value>\n");
+        printf(": constants must be assigned an integer value\n");
         exit(1);
     }
     else if (list_num == 6)
     {
-        printf("constant and variable declarations must be followed by a semicolon>\n");
+        printf("10: constant and variable declarations must be followed by a semicolon\n");
         exit(1);
     }
     else if (list_num == 7)
     {
-        printf("undeclared identifier>\n");
+        printf("11: undeclared identifier\n");
         exit(1);
     }
     else if (list_num == 8)
     {
-        printf("only variable values may be altered>\n");
+        printf(": only variable values may be altered>\n");
         exit(1);
     }
     else if (list_num == 9)
     {
-        printf("assignment statements must use :=>\n");
+        printf("1: Use = instead of := \n");
         exit(1);
     }
     else if (list_num == 10)
     {
-        printf("begin must be followed by end>\n");
+        printf(": begin must be followed by end\n");
         exit(1);
     }
     else if (list_num == 11)
     {
-        printf("if must be followed by then>\n");
+        printf(": if must be followed by then\n");
         exit(1);
     }
     else if (list_num == 12)
     {
-        printf("while must be followed by do>\n");
+        printf(": while must be followed by do\n");
         exit(1);
     }
     else if (list_num == 13)
     {
-        printf("condition must contain comparison operator>\n");
+        printf(": condition must contain comparison operator\n");
         exit(1);
     }
     else if (list_num == 14)
     {
-        printf("right parenthesis must follow left parenthesis>\n");
+        printf("22: right parenthesis must follow left parenthesis>\n");
         exit(1);
     }
     else if (list_num == 15)
     {
-        printf("arithmetic equations must contain operands, parentheses, numbers, or symbols>\n");
+        printf(": arithmetic equations must contain operands, parentheses, numbers, or symbols>\n");
         exit(1);
+    }
+    else if (list_num == 16)
+    {
+        printf("17: Semicolon or end expected after procedure declaration\n");
+    }
+    else if (list_num == 17)
+    {
+        printf("14: Call must be followed by an identifier\n");
+    }
+    else if (list_num == 18)
+    {
+        printf("15:	Call of a constant or variable is meaningless.\n");
     }
     else
     {
-        //printf("No error found");
+        // printf("No error found");
     }
 }
 
 void emit(char op[4], int l, int m)
 {
-
+    ti++;
     // printf(" %s \n",op);
     strcpy(tex[ti].op, op); // opcode
-    tex[ti].r = 0;          // register    not used in your project
     tex[ti].l = l;          // lexicographical level
-    tex[ti].m = m;          // modifier
-    ti++;
+    tex[ti].m = m;          // m
 }
 
 int const_decla_f(FILE *inf)
 {
-    char *tk.name;
-
     do
     {
         tk.name = getNextToken(inf);
@@ -394,27 +588,29 @@ int const_decla_f(FILE *inf)
         if (DFS_id(tk.name) < 0)
         {
             error_f(2);
-            return -1;
+            return ERRORCODE;
         }
 
         if (symb_table_check(tk.name) != -1)
         {
             error_f(3);
-            return -1;
+            return ERRORCODE;
         }
 
         symbol_table[si].kind = 1;
         strcpy(symbol_table[si].name, tk.name);
+
         tk.name = getNextToken(inf);
 
         if (DFS_specialCh(tk.name[0]) != 9)
         {
             error_f(4);
-            return -1;
+            return ERRORCODE;
         }
 
         tk.name = getNextToken(inf);
-        if (DFS_num(tk.name))
+
+        if (DFS_num(tk.name) > 0)
         {
             symbol_table[si].val = atoi(tk.name);
             symbol_table[si].addr = 0;
@@ -423,38 +619,40 @@ int const_decla_f(FILE *inf)
         }
         else
         {
-
             error_f(5);
-            return -1;
+            return ERRORCODE;
         }
-        fseek(inf, -1, SEEK_CUR);
+
         tk.name = getNextToken(inf);
+
     } while (strcmp(tk.name, ",") == 0);
 
     if (strcmp(tk.name, ";") != 0)
     {
         error_f(6);
-        return -1;
+        return ERRORCODE;
     }
 
-    free(tk.name);
+    tk.name = getNextToken(inf);
+
     return 1;
 }
 
-int expression_f(FILE *inf, char *token_str)
+int expression_f(FILE *inf)
 {
+    int cur_val = 0;
 
-    char c;
-    char *tk.name;
-    int i = 0;
-
-    if (strcmp(token_str, "-") == 0)
+    if (strcmp(tk.name, "-") == 0)
     {
+
         tk.name = getNextToken(inf);
 
-        term_f(inf, tk.name);
+        cur_val = term_f(inf);
 
-        emit("NEG", l, m);
+        if (cur_val == ERRORCODE)
+            return ERRORCODE;
+
+        emit("NEG", l, 6);
 
         while (strcmp(tk.name, "+") == 0 || strcmp(tk.name, "-") == 0)
         {
@@ -462,381 +660,532 @@ int expression_f(FILE *inf, char *token_str)
             {
                 tk.name = getNextToken(inf);
 
-                term_f(inf, tk.name);
+                int cur_val2 = term_f(inf);
 
-                emit("ADD", l, m);
+                if (cur_val2 == ERRORCODE)
+                    return ERRORCODE;
+
+                cur_val = cur_val2 + cur_val;
+
+                emit("ADD", l, 1);
             }
             else
             {
                 tk.name = getNextToken(inf);
 
-                term_f(inf, tk.name);
+                int cur_val2 = term_f(inf);
 
-                emit("SUB", l, m);
+                if (cur_val2 == ERRORCODE)
+                    return ERRORCODE;
+
+                cur_val = cur_val - cur_val2;
+
+                emit("SUB", l, 2);
             }
         }
     }
     else
     {
-        if (strcmp(token_str, "+") == 0)
+        if (strcmp(tk.name, "+") == 0)
         {
             tk.name = getNextToken(inf);
-            term_f(inf, tk.name);
+        }
 
-            while (strcmp(tk.name, "+") == 0 || strcmp(tk.name, "-") == 0)
+        cur_val = term_f(inf);
+
+        if (cur_val == ERRORCODE)
+            return ERRORCODE;
+
+        while (strcmp(tk.name, "+") == 0 || strcmp(tk.name, "-") == 0)
+        {
+            if (strcmp(tk.name, "+") == 0)
             {
-                if (strcmp(tk.name, "+") == 0)
-                {
-                    tk.name = getNextToken(inf);
+                tk.name = getNextToken(inf);
 
-                    term_f(inf, tk.name);
+                int cur_val2 = term_f(inf);
 
-                    emit("ADD", l, m);
-                }
-                else
-                {
-                    tk.name = getNextToken(inf);
+                if (cur_val2 == ERRORCODE)
+                    return ERRORCODE;
 
-                    term_f(inf, tk.name);
+                cur_val = cur_val + cur_val2;
 
-                    emit("SUB", l, m);
-                }
+                emit("ADD", l, 1);
+            }
+            else
+            {
+                tk.name = getNextToken(inf);
+
+                int cur_val2 = term_f(inf);
+
+                if (cur_val2 == ERRORCODE)
+                    return ERRORCODE;
+
+                cur_val = cur_val - cur_val2;
+
+                emit("SUB", l, 2);
             }
         }
     }
-    return 1;
+    return cur_val;
 }
 
-int factor_f(FILE *inf, char *token_str)
+int factor_f(FILE *inf)
 {
-    char c;
-    char *tk.name;
+    int cur_val = 1;
 
-    int curTokenIndex = symb_table_check(token_str);
-
-    if (curTokenIndex != -1)
+    if ((DFS_id(tk.name) > 0) && (DFS_num(tk.name) < 0))
     {
+
+        int curTokenIndex = symb_table_check(tk.name);
+
+        if (curTokenIndex == -1)
+        {
+            error_f(7);
+            return ERRORCODE;
+        }
+
         if (symbol_table[curTokenIndex].kind == 1)
         {
             m = symbol_table[curTokenIndex].val;
+            cur_val = m;
             emit("LIT", l, m);
+        }
+        else if (symbol_table[curTokenIndex].kind == 2)
+        {
+            m = symbol_table[curTokenIndex].addr;
+            cur_val = symbol_table[curTokenIndex].val;
+            emit("LOD", l, m);
         }
         else
         {
-            m = symbol_table[curTokenIndex].addr;
-            emit("LOD", l, m);
         }
+
+        tk.name = getNextToken(inf);
+    }
+    else if (DFS_num(tk.name) > 0)
+    {
+        m = atoi(tk.name);
+
+        emit("LIT", l, m);
+
+        tk.name = getNextToken(inf);
+
+        cur_val = m;
+    }
+    else if (strcmp(tk.name, "(") == 0)
+    {
+
+        tk.name = getNextToken(inf);
+
+        int cur_val = expression_f(inf);
+
+        if (strcmp(tk.name, ")") != 0)
+        {
+            error_f(14);
+            return ERRORCODE;
+        }
+
+        tk.name = getNextToken(inf);
+
+        return cur_val;
     }
     else
     {
-        if (DFS_num(token_str))
-        {
-            m = atoi(token_str);
-            emit("LIT", l, m);
-        }
-        else if (strcmp(token_str, "(") == 0)
-        {
-            tk.name = getNextToken(inf);
-
-            expression_f(inf, tk.name);
-
-            if (strcmp(tk.name, ")") != 0)
-            {
-                error_f(14);
-                return -1;
-            }
-        }
-        else
-        {
-            error_f(7);
-            return -1;
-        }
+        error_f(15);
+        return ERRORCODE;
     }
-    return 1;
+
+    return cur_val;
 }
 
-int condition_f(FILE *inf, char *token_str)
+int condition_f(FILE *inf)
 {
-    char *tk.name;
-    char c;
-    int i = 0;
+    int cur_val = 0;
 
-    if (strcmp(token_str, "odd") == 0)
+    if (strcmp(tk.name, "odd") == 0)
     {
         tk.name = getNextToken(inf);
 
-        expression_f(inf, tk.name);
+        cur_val = expression_f(inf);
 
-        emit("ODD", l, m);
+        if (cur_val == ERRORCODE)
+            return ERRORCODE;
+
+        if (cur_val % 2 != 1)
+            cur_val = 0;
+
+        emit("ODD", l, 11);
     }
     else
     {
-        expression_f(inf, token_str);
+        cur_val = expression_f(inf);
 
-        if (strcmp(token_str, "=") == 0)
+        if (cur_val == ERRORCODE)
+            return ERRORCODE;
+
+        if (strcmp(tk.name, "=") == 0)
         {
+
             tk.name = getNextToken(inf);
 
-            expression_f(inf, tk.name);
+            int cur_val2 = expression_f(inf);
 
-            emit("EQL", l, m);
+            if (cur_val2 == ERRORCODE)
+                return ERRORCODE;
+
+            if (cur_val != cur_val2)
+                cur_val = 0;
+
+            emit("EQL", l, 5);
         }
-        else if (strcmp(token_str, "!=") == 0)
+        else if (strcmp(tk.name, "!=") == 0)
         {
             tk.name = getNextToken(inf);
 
-            expression_f(inf, tk.name);
+            int cur_val2 = expression_f(inf);
 
-            emit("NEQ", l, m);
+            if (cur_val2 == ERRORCODE)
+                return ERRORCODE;
+
+            if (cur_val2 == cur_val)
+                cur_val = 0;
+
+            emit("NEQ", l, 6);
         }
-        else if (strcmp(token_str, "<") == 0)
+        else if (strcmp(tk.name, "<") == 0)
         {
             tk.name = getNextToken(inf);
 
-            expression_f(inf, tk.name);
+            int cur_val2 = expression_f(inf);
+
+            if (cur_val2 == ERRORCODE)
+                return ERRORCODE;
+
+            if (cur_val >= cur_val2)
+                cur_val = 0;
 
             emit("LSS", l, m);
         }
-        else if (strcmp(token_str, "<=") == 0)
+        else if (strcmp(tk.name, "<=") == 0)
         {
             tk.name = getNextToken(inf);
 
-            expression_f(inf, tk.name);
+            int cur_val2 = expression_f(inf);
+
+            if (cur_val2 == ERRORCODE)
+                return ERRORCODE;
+
+            if (cur_val > cur_val2)
+                cur_val = 0;
 
             emit("LEQ", l, m);
         }
-        else if (strcmp(token_str, ">") == 0)
+        else if (strcmp(tk.name, ">") == 0)
         {
             tk.name = getNextToken(inf);
 
-            expression_f(inf, tk.name);
+            int cur_val2 = expression_f(inf);
+
+            if (cur_val2 == ERRORCODE)
+                return ERRORCODE;
+
+            if (cur_val <= cur_val2)
+                cur_val = 0;
 
             emit("GTR", l, m);
         }
-        else if (strcmp(token_str, ">=") == 0)
+        else if (strcmp(tk.name, ">=") == 0)
         {
             tk.name = getNextToken(inf);
 
-            expression_f(inf, tk.name);
+            int cur_val2 = expression_f(inf);
+
+            if (cur_val2 == ERRORCODE)
+                return ERRORCODE;
+
+            if (cur_val < cur_val2)
+                cur_val = 0;
 
             emit("GEQ", l, m);
         }
         else
         {
             error_f(13);
-            return -1;
+            return ERRORCODE;
         }
     }
 
-    return 1;
+    return cur_val;
 }
 
-int statement_f(FILE *inf, char *token_str)
+int statement_f(FILE *inf)
 {
-    char *tk.name;
-    int curTokenIndex = symb_table_check(token_str);
-    char c;
-    int i = 0;
 
-    if (curTokenIndex >= 0)
+    if ((!check_for_reserved(tk.name)) && DFS_id(tk.name) > 0)
     {
+        int curTokenIndex = symb_table_check(tk.name);
+
+        if (curTokenIndex == -1)
+        {
+            error_f(7);
+            return ERRORCODE;
+        }
+
         if (symbol_table[curTokenIndex].kind != 2)
         {
             error_f(8);
-            return -1;
+            return ERRORCODE;
         }
 
         tk.name = getNextToken(inf);
 
-        if (strcmp(tk.name, ":=") == 0)
+        if (strcmp(tk.name, ":=") != 0)
+        {
+            error_f(9);
+            return ERRORCODE;
+        }
+
+        tk.name = getNextToken(inf);
+
+        if (condFlag == 1) // if the condition is true then run the statement
+            symbol_table[curTokenIndex].val = expression_f(inf);
+        else
+            expression_f(inf);
+
+        m = symbol_table[curTokenIndex].addr;
+        emit("STO", l, m);
+        return 1;
+    }
+    else if (strcmp(tk.name, "call") == 0)
+    {
+        tk.name = getNextToken(inf);
+
+        if (DFS_id(tk.name) < 0)
+        {
+            error_f(17);
+            return ERRORCODE;
+        }
+
+        int procPosition = symb_table_check(tk.name);
+
+        if (procPosition == -1)
+        {
+            error_f(7);
+            return ERRORCODE;
+        }
+
+        if (symbol_table[procPosition].kind == 3)
+        {
+            emit("CAL", symbol_table[procPosition].level, symbol_table[procPosition].addr);
+        }
+        else
+        {
+            error_f(18);
+            return ERRORCODE;
+        }
+
+        tk.name = getNextToken(inf);
+    }
+
+    if (strcmp(tk.name, "begin") == 0)
+    {
+        do
         {
             tk.name = getNextToken(inf);
 
-            expression_f(inf, tk.name);
-            term_f(inf, tk.name);
+            int cur_val = statement_f(inf);
 
-            lineCount++;
-            m = symbol_table[curTokenIndex].addr;
-            emit("STO", l, m);
-            return 1;
-        }
-        else
+            if (cur_val == ERRORCODE)
+                return ERRORCODE;
+
+        } while (strcmp(tk.name, ";") == 0);
+
+        if (strcmp(tk.name, "end") != 0)
         {
-            error_f(9);
-            return -1;
+            error_f(10);
+            return ERRORCODE;
         }
+
+        tk.name = getNextToken(inf);
+        return 1;
     }
-    else
+    if (strcmp(tk.name, "if") == 0)
     {
-        if (!check_for_reserved(token_str))
+        tk.name = getNextToken(inf);
+
+        int cur_val = condition_f(inf);
+
+        condFlag = cur_val;
+
+        if (cur_val == ERRORCODE)
+            return ERRORCODE;
+
+        int jpcIndex = ti;
+
+        emit("JPC", 0, jpcIndex);
+
+        if (strcmp(tk.name, "then") != 0)
+        {
+            error_f(11);
+            return ERRORCODE;
+        }
+
+        tk.name = getNextToken(inf);
+
+        int cur_val2 = statement_f(inf);
+
+        if (cur_val2 == ERRORCODE)
+            return ERRORCODE;
+
+        tex[jpcIndex].m = ti;
+
+        condFlag = 1; // current condition is reset
+        return 1;
+    }
+    if (strcmp(tk.name, "while") == 0)
+    {
+        tk.name = getNextToken(inf);
+
+        int loopIndex = ti;
+
+        int cur_val = condition_f(inf);
+
+        if (cur_val == ERRORCODE)
+            return ERRORCODE;
+
+        if (strcmp(tk.name, "do") != 0)
+        {
+            error_f(12);
+            return ERRORCODE;
+        }
+
+        tk.name = getNextToken(inf);
+
+        int jpcIdx = ti;
+
+        emit("JPC", 0, jpcIdx);
+
+        int cur_val2 = statement_f(inf);
+
+        if (cur_val2 == ERRORCODE)
+            return ERRORCODE;
+
+        m = loopIndex;
+
+        emit("JMP", 0, loopIndex);
+        tex[jpcIdx].m = ti;
+
+        return 1;
+    }
+    if (strcmp(tk.name, "read") == 0)
+    {
+
+        tk.name = getNextToken(inf);
+
+        if (DFS_id(tk.name) < 0)
+        {
+            error_f(2);
+            return ERRORCODE;
+        }
+
+        int symIdx = symb_table_check(tk.name);
+
+        if (symIdx == -1)
         {
             error_f(7);
-            return -1;
+            return ERRORCODE;
         }
-        else
-        { // it's reserved word
-            if (strcmp(token_str, "begin") == 0)
-            {
-
-                do
-                {
-                    tk.name = getNextToken(inf);
-
-                    if (strcmp(tk.name, "end") == 0)
-                    {
-                        fseek(inf, -1, SEEK_CUR);
-                        return 1;
-                    }
-
-                    statement_f(inf, tk.name);
-                    fseek(inf, -1, SEEK_CUR);
-
-                    tk.name = getNextToken(inf);
-
-                } while (strcmp(tk.name, ";") == 0);
-
-                if (strcmp(tk.name, "end") != 0)
-                {
-                    error_f(10);
-                    return -1;
-                }
-            }
-            if (strcmp(token_str, "if") == 0)
-            {
-                tk.name = getNextToken(inf);
-
-                condition_f(inf, tk.name);
-
-                // int jpcIndex = current code Index
-                emit("JPC", l, m);
-
-                if (strcmp(tk.name, "then") == 0)
-                {
-                    error_f(11);
-                    return -1;
-                }
-
-                tk.name = getNextToken(inf);
-
-                statement_f(inf, tk.name);
-
-                // code[jpcIndex].M = current code Index
-                return 1;
-            }
-            if (strcmp(token_str, "while") == 0)
-            {
-                tk.name = getNextToken(inf);
-
-                // int loopIndex = current code Index
-
-                condition_f(inf, tk.name);
-
-                if (strcmp(tk.name, "do") != 0)
-                {
-                    error_f(12);
-                    return -1;
-                }
-
-                tk.name = getNextToken(inf);
-
-                // jpcIdx = current code index
-
-                printf("  %d    JPC    0    %d\n", lineCount, m);
-
-                statement_f(inf, tk.name);
-
-                // m = jpcIdx
-                printf("  %d    JMP    0    %d\n", lineCount, m);
-
-                // code[jpcIdx].m = current code curTokenIndex
-
-                return 1;
-            }
-            if (strcmp(token_str, "read") == 0)
-            {
-                tk.name = getNextToken(inf);
-
-                if (DFS_id(token_str) < 0)
-                {
-                    error_f(2);
-                    return -1;
-                }
-
-                int symIdx = symb_table_check(tk.name);
-
-                if (symIdx == -1)
-                {
-                    error_f(7);
-                    return -1;
-                }
-                if (symbol_table[symIdx].kind != 2)
-                {
-                    error_f(8);
-                    return -1;
-                }
-
-                tk.name = getNextToken(inf);
-
-                emit("READ", l, m);
-
-                m = symbol_table[symIdx].addr;
-
-                emit("STO", l, m);
-                return 1;
-            }
-
-            if (strcmp(tk.name, "write") == 0)
-            {
-                tk.name = getNextToken(inf);
-
-                expression_f(inf, tk.name);
-
-                emit("WRITE", l, m);
-                return 1;
-            }
+        if (symbol_table[symIdx].kind != 2)
+        {
+            error_f(8);
+            return ERRORCODE;
         }
+
+        tk.name = getNextToken(inf);
+
+        emit("READ", 0, 2);
+
+        m = symbol_table[symIdx].addr;
+
+        emit("STO", l, m);
+        return 1;
     }
+
+    if (strcmp(tk.name, "write") == 0)
+    {
+        tk.name = getNextToken(inf);
+
+        int cur_val2 = expression_f(inf);
+
+        if (cur_val2 == ERRORCODE)
+            return -1;
+
+        emit("WRITE", 0, 1);
+
+        return 1;
+    }
+
     return 1;
 }
 
-int term_f(FILE *inf, char *token_str)
+int term_f(FILE *inf)
 {
-    char c;
-    char *tk.name;
-    int i = 0;
+    int cur_val = factor_f(inf);
 
-    factor_f(inf, token_str);
-
-    tk.name = getNextToken(inf);
+    if (cur_val == ERRORCODE)
+        return ERRORCODE;
 
     while (strcmp(tk.name, "*") == 0 || strcmp(tk.name, "/") == 0)
     {
         if (strcmp(tk.name, "*") == 0)
         {
             tk.name = getNextToken(inf);
-            factor_f(inf, tk.name);
+
+            int cur_val2 = factor_f(inf);
+
+            if (cur_val2 == ERRORCODE)
+                return ERRORCODE;
+
+            cur_val = cur_val * cur_val2;
+
             m += 1;
-            emit("MUL", l, m);
+            emit("MUL", 0, 3);
+
+            return cur_val;
         }
         else
         {
             tk.name = getNextToken(inf);
 
-            factor_f(inf, token_str);
+            int cur_val2 = factor_f(inf);
 
-            emit("DIV", l, m);
+            if (cur_val2 == ERRORCODE)
+                return ERRORCODE;
+
+            cur_val = cur_val / cur_val2;
+
+            m += 1;
+            emit("DIV", 0, 4);
+
+            return cur_val;
         }
     }
-    return 1;
+    return cur_val;
+}
+
+void enter(int k, char *n, int v, int l, int a)
+{
+    si++;
+    symbol_table[si].kind = k;
+    strcpy(symbol_table[si].name, n);
+    symbol_table[si].level = l;
+    symbol_table[si].val = v;
+    symbol_table[si].addr = a + si;
 }
 
 int var_decla_f(FILE *inf)
 {
     int numVars = 0;
-    int i = 0;
-    char *tk.name;
-    char c;
-    int addCount = 0;
 
     do
     {
@@ -845,92 +1194,127 @@ int var_decla_f(FILE *inf)
         if (DFS_id(tk.name) < 0)
         {
             error_f(2);
-            return -1;
+            return ERRORCODE;
         }
-        if (symb_table_check(tk.name) != -1)
+
+        int varIndex = symb_table_check(tk.name);
+        if ((varIndex != -1) && (symbol_table[varIndex].level) == l)
         {
             error_f(3);
-            return -1;
+            return ERRORCODE;
         }
 
-        symbol_table[si].kind = 2;
-        strcpy(symbol_table[si].name, tk.name);
-        symbol_table[si].level = 0;
-        symbol_table[si].val = 0;
-        symbol_table[si].addr = 3;
-        symbol_table[si].addr += si;
-        si++;
+        enter(2, tk.name, 0, l, m);
 
         numVars++;
-
-        fseek(inf, -1, SEEK_CUR);
         tk.name = getNextToken(inf);
 
-    } while (strcmp(tk.name, ",") == 0);
+    } while (DFS_specialCh(tk.name[0]) == 17);
+
+    if (DFS_specialCh(tk.name[0]) != 18)
+    {
+        error_f(6);
+        return ERRORCODE;
+    }
+
+    tk.name = getNextToken(inf);
+
+    return numVars;
+}
+
+int proc_decla_f(FILE *inf)
+{
+    tk.name = getNextToken(inf);
+
+    if (DFS_id(tk.name) < 0)
+    {
+        error_f(2);
+        return ERRORCODE;
+    }
+
+    enter(3, tk.name, 0, l, m);
+
+    tk.name = getNextToken(inf);
 
     if (strcmp(tk.name, ";") != 0)
     {
-        error_f(6);
-        return -1;
+        error_f(16);
+        return ERRORCODE;
     }
 
-    free(tk.name);
-    return numVars;
+    return si;
 }
 
 int block_f(FILE *inf)
 {
-    char *tk.name;
-    char c;
-    int i = 0;
+    emit("JMP", l, m);
+    
+    int numVars = 0;
 
-    while ((c = fgetc(inf)) != EOF)
+    tk.name = getNextToken(inf);
+
+    do
     {
-
-        if (isalpha(c))
+        if (strcmp(tk.name, "const") == 0)
         {
+            if (const_decla_f(inf) < 0)
+                return ERRORCODE;
+        }
+        else if (strcmp(tk.name, "var") == 0)
+        {
+            numVars = var_decla_f(inf);
 
-            fseek(inf, -1, SEEK_CUR);
-            tk.name = getNextToken(inf);
+            if (numVars < 0)
+                return ERRORCODE;
 
-            if (check_for_reserved(tk.name) == 28)
+            m += numVars;
+        }
+        else
+        {
+        }
+
+        while (strcmp(tk.name, "procedure") == 0)
+        {
+            l++;
+
+            int tx = proc_decla_f(inf);
+
+            if (tx == ERRORCODE)
             {
-
-                if (const_decla_f(inf) < 0)
-                    return -1;
-                else
-                {
-                }
+                return ERRORCODE;
             }
-            else if (check_for_reserved(tk.name) == 29)
-            {
-                numVars = var_decla_f(inf);
 
-                if (numVars < 0)
+
+            int numVarProc = block_f(inf);
+
+            if (numVarProc != ERRORCODE)
+            {
+                if (strcmp(tk.name, ";") != 0)
                 {
-                    return -1;
+                    error_f(16);
+                    return ERRORCODE;
                 }
-                else
-                {
-                    m += numVars;
-                    emit("INC", l, m);
-                }
+
+                m += numVarProc;
+
+                symbol_table[tx].addr = m;
+
+                tk.name = getNextToken(inf);
             }
             else
             {
-                statement_f(inf, tk.name);
+                return ERRORCODE;
             }
         }
-        else if (c == '.')
-            break;
-        else
-        {
-            continue;
-        }
-    }
+    } while (strcmp(tk.name, "const") == 0 || strcmp(tk.name, "var") == 0 || strcmp(tk.name, "procedure") == 0);
 
-    free(tk.name);
-    fseek(inf, -1, SEEK_CUR);
+    emit("INC", 0, m);
 
-    return 1;
+    int cur_val = statement_f(inf);
+
+    if (cur_val == ERRORCODE)
+        return ERRORCODE;
+
+    l--;
+    return numVars;
 }

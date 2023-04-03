@@ -1,0 +1,12 @@
+var sum, n;
+procedure summation;
+	begin
+		sum := sum + n;
+		n := n - 1;
+		if n > 0 then call summation;
+	end;
+begin
+	read n;
+	call summation;
+	write sum;
+end.
