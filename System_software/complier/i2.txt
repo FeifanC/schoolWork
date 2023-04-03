@@ -1,10 +1,10 @@
-int x,y,z,v,w;
+var x,y,z,v,w;
 procedure a;
-  int x,y,u,v;
+  var x,y,u,v;
   procedure b;
-    int y,z,v;
+    var y,z,v;
     procedure c;
-      int y,z;
+      var y,z;
       begin
         z:=1;
         x:=y+z+w
@@ -13,7 +13,7 @@ procedure a;
       y:=x+u+w;
       call c
     end;
-  begin
+  begin 
     z:=2;
     u:=z+w;
     call b
