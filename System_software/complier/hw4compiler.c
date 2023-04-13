@@ -102,7 +102,8 @@ int main(int argc, char **argv)
                 error_f(1);
             }
 
-            // print_vm();
+
+            print_vm();
             print_assemblyCode();
         }
         fclose(inf);
@@ -114,7 +115,7 @@ int print_assemblyCode()
     outFile = fopen("elf.txt", "w");
 
     printf("Assembly Code: \n");
-    for (int a = 0; a < ti; a++)
+    for (int a = 0; a <= ti; a++)
     {
         if (strcmp(tex[a].op, "LIT") == 0)
         {
@@ -230,6 +231,7 @@ int print_assemblyCode()
         printf("\n");
         fprintf(outFile, "\n");
     }
+
 }
 
 void print_vm()
@@ -251,7 +253,7 @@ void print_Emit()
 
     printf("Assembly Code: \n");
     printf("Line    OP    L    M\n");
-    for (int i = 0; i < ti; i++)
+    for (int i = 0; i <= ti; i++)
     {
         if (strcmp(tex[i].op, "call") == 0 || strcmp(tex[i].op, "precedure") == 0 || strcmp(tex[i].op, "else") == 0)
         {
@@ -260,8 +262,6 @@ void print_Emit()
 
         printf("  %d    %s    %d    %d\n", lineCount++, tex[i].op, tex[i].l, tex[i].m);
     }
-
-    printf("  %d    SYS    %d    %d\n", lineCount, l, m);
 }
 
 void print_symb_table()
@@ -271,7 +271,7 @@ void print_symb_table()
     printf("---------------------------------------------------\n");
     printf("   3 |        main |     0 |     0 |     3 |     1\n");
 
-    for (int i = 0; i < si; i++)
+    for (int i = 0; i <= si; i++)
     {
         printf("   %d |           %s |     %d |     %d |     %d |     1\n", symbol_table[i].kind, symbol_table[i].name, symbol_table[i].val, symbol_table[i].level, symbol_table[i].addr);
     }
@@ -282,7 +282,7 @@ int symb_table_check(char *str)
     int curIndex = -1;
     int maxLevel = -1;
 
-    for (int i = 0; i < ti; i++)
+    for (int i = 0; i <= si; i++)
     {
         if (strcmp(str, symbol_table[i].name) == 0 && (symbol_table[i].level == l))
             return i;
@@ -326,8 +326,6 @@ int DFS_specialCh(char letter)
         return 10;
     else if (letter == '$')
         return 12;
-    else if (letter == '%')
-        return 14;
     else
         return 0;
 }
@@ -489,17 +487,17 @@ void error_f(int list_num)
     }
     else if (list_num == 3)
     {
-        printf(": symbol name has already been declared\n");
+        printf("3: symbol name has already been declared\n");
         exit(1);
     }
     else if (list_num == 4)
     {
-        printf(": constants must be assigned with =\n");
+        printf("5: constants must be assigned with =\n");
         exit(1);
     }
     else if (list_num == 5)
     {
-        printf(": constants must be assigned an integer value\n");
+        printf("2: constants must be assigned an integer value\n");
         exit(1);
     }
     else if (list_num == 6)
@@ -514,7 +512,7 @@ void error_f(int list_num)
     }
     else if (list_num == 8)
     {
-        printf(": only variable values may be altered>\n");
+        printf("8: only variable values may be altered>\n");
         exit(1);
     }
     else if (list_num == 9)
@@ -524,22 +522,22 @@ void error_f(int list_num)
     }
     else if (list_num == 10)
     {
-        printf(": begin must be followed by end\n");
+        printf("6: begin must be followed by end\n");
         exit(1);
     }
     else if (list_num == 11)
     {
-        printf(": if must be followed by then\n");
+        printf("7: if must be followed by then\n");
         exit(1);
     }
     else if (list_num == 12)
     {
-        printf(": while must be followed by do\n");
+        printf("12: while must be followed by do\n");
         exit(1);
     }
     else if (list_num == 13)
     {
-        printf(": condition must contain comparison operator\n");
+        printf("13: condition must contain comparison operator\n");
         exit(1);
     }
     else if (list_num == 14)
@@ -549,7 +547,7 @@ void error_f(int list_num)
     }
     else if (list_num == 15)
     {
-        printf(": arithmetic equations must contain operands, parentheses, numbers, or symbols>\n");
+        printf("16: arithmetic equations must contain operands, parentheses, numbers, or symbols>\n");
         exit(1);
     }
     else if (list_num == 16)
@@ -1314,6 +1312,8 @@ int block_f(FILE *inf)
 
     if (cur_val == ERRORCODE)
         return ERRORCODE;
+
+    emit("SYS", 0, 3);
 
     l--;
     return numVars;
