@@ -2,7 +2,7 @@
     Feifan Cao, Juan M Garcia
     Dr. Montagne
     COP3402 Spring
-    HW3 - Tiny PL/0 compile
+    HW4 - NEW Tiny PL/0 compiler with lex reader
 */
 
 #include <ctype.h>
@@ -53,12 +53,12 @@ int si = -1; // symbol table index
 int m = 3;   // aka tx
 int ti = -1; // index for op lines aka cx
 int l = 0;
+int jpm = 3;
 int commentFlag = 0;
 int condFlag = 1;
 char fileName[JUSTBIG];
 FILE *outFile;
 
-void print_symb_table();
 int symb_table_check(char *str);
 int DFS_specialCh(char letter);
 int check_for_reserved(char *word);
@@ -77,9 +77,10 @@ int var_decla_f(FILE *inf);
 int block_f(FILE *inf);
 void print_Emit();
 int print_assemblyCode();
-void print_vm();
+void print_src();
 int proc_decla_f(FILE *inf);
 void enter(int kind, char *name, int val, int level, int addr);
+void mark();
 void emit(char op[4], int l, int m); // function used to send different op codes to array
 
 int main(int argc, char **argv)
@@ -102,11 +103,24 @@ int main(int argc, char **argv)
                 error_f(1);
             }
 
+            emit("SYS", l , m);
 
-            print_vm();
+            print_src();
             print_assemblyCode();
         }
         fclose(inf);
+    }
+}
+
+void mark()
+{
+    for (int i = si; i >= 0; i--)
+    {
+        if (symbol_table[i].mark == 1)
+            continue;
+        if (symbol_table[i].level < l)
+            return;
+        symbol_table[i].mark = 1;
     }
 }
 
@@ -120,121 +134,120 @@ int print_assemblyCode()
         if (strcmp(tex[a].op, "LIT") == 0)
         {
             fprintf(outFile, "1  0  %d", tex[a].m);
-            printf("1  0  %d", tex[a].m);
+            printf("LIT  0  %d", tex[a].m);
         }
         else if (strcmp(tex[a].op, "ADD") == 0)
         {
             fprintf(outFile, "2  0  1");
-            printf("2  0  1");
+            printf("ADD  0  1");
         }
         else if (strcmp(tex[a].op, "SUB") == 0)
         {
             fprintf(outFile, "2  0  2");
-            printf("2  0  2");
+            printf("SUB  0  2");
         }
         else if (strcmp(tex[a].op, "MUL") == 0)
         {
             fprintf(outFile, "2  0  3");
-            printf("2  0  3");
+            printf("MUL  0  3");
         }
         else if (strcmp(tex[a].op, "DIV") == 0)
         {
             fprintf(outFile, "2  0  4");
-            printf("2  0  4");
+            printf("DIV  0  4");
         }
         else if (strcmp(tex[a].op, "EQL") == 0)
         {
             fprintf(outFile, "2  0  5");
-            printf("2  0  5");
+            printf("EQL  0  5");
         }
 
         else if (strcmp(tex[a].op, "NEQ") == 0)
         {
             fprintf(outFile, "2  0  6");
-            printf("2  0  6");
+            printf("NEQ  0  6");
         }
 
         else if (strcmp(tex[a].op, "LSS") == 0)
         {
             fprintf(outFile, "2  0  7");
-            printf("2  0  7");
+            printf("LSS  0  7");
         }
 
         else if (strcmp(tex[a].op, "LEQ") == 0)
         {
             fprintf(outFile, "2  0  8");
-            printf("2  0  8");
+            printf("LEQ  0  8");
         }
 
         else if (strcmp(tex[a].op, "GTR") == 0)
         {
             fprintf(outFile, "2  0  9");
-            printf("2  0  9");
+            printf("GTR  0  9");
         }
         else if (strcmp(tex[a].op, "GEQ") == 0)
         {
             fprintf(outFile, "2  0  10");
-            printf("2  0  10");
+            printf("GEQ  0  10");
         }
         else if (strcmp(tex[a].op, "ODD") == 0)
         {
             fprintf(outFile, "2  0  11");
-            printf("2  0  11");
+            printf("ODD  0  11");
         }
         else if (strcmp(tex[a].op, "LOD") == 0)
         {
             fprintf(outFile, "3  %d  %d", tex[a].l, tex[a].m);
-            printf("3  %d  %d", tex[a].l, tex[a].m);
+            printf("LOD  %d  %d", tex[a].l, tex[a].m);
         }
         else if (strcmp(tex[a].op, "STO") == 0)
         {
             fprintf(outFile, "4  %d  %d", tex[a].l, tex[a].m);
-            printf("4  %d  %d", tex[a].l, tex[a].m);
+            printf("STO  %d  %d", tex[a].l, tex[a].m);
         }
         else if (strcmp(tex[a].op, "CAL") == 0)
         {
             fprintf(outFile, "5  %d  %d", tex[a].l, tex[a].m);
-            printf("5  %d  %d", tex[a].l, tex[a].m);
+            printf("CAL  %d  %d", tex[a].l, tex[a].m);
         }
         else if (strcmp(tex[a].op, "INC") == 0)
         {
             fprintf(outFile, "6  0  %d", tex[a].m);
-            printf("6  0  %d", tex[a].m);
+            printf("INC  0  %d", tex[a].m);
         }
         else if (strcmp(tex[a].op, "JMP") == 0)
         {
             fprintf(outFile, "7  0  %d", tex[a].m);
-            printf("7  0  %d", tex[a].m);
+            printf("JMP  0  %d", tex[a].m);
         }
         else if (strcmp(tex[a].op, "JPC") == 0)
 
         {
             fprintf(outFile, "8  0  %d", tex[a].m);
-            printf("8  0  %d", tex[a].m);
+            printf("JPC  0  %d", tex[a].m);
         }
         else if (strcmp(tex[a].op, "SYS") == 0)
         {
             fprintf(outFile, "9  0  3");
-            printf("9  0  3");
+            printf("SYS  0  3");
         }
         else if (strcmp(tex[a].op, "READ") == 0)
         {
             fprintf(outFile, "9  0  2");
-            printf("9  0  2");
+            printf("READ  0  2");
         }
         else
         {
             fprintf(outFile, "9  0  1");
-            printf("9  0  1");
+            printf("WRITE  0  1");
         }
 
         printf("\n");
         fprintf(outFile, "\n");
     }
-
 }
 
-void print_vm()
+void print_src()
 {
     FILE *inf = fopen(fileName, "r");
     char c;
@@ -262,19 +275,8 @@ void print_Emit()
 
         printf("  %d    %s    %d    %d\n", lineCount++, tex[i].op, tex[i].l, tex[i].m);
     }
-}
 
-void print_symb_table()
-{
-    printf("\nSymbol Table:\n");
-    printf("Kind | Name        | Value | Level | Address | Mark\n");
-    printf("---------------------------------------------------\n");
-    printf("   3 |        main |     0 |     0 |     3 |     1\n");
-
-    for (int i = 0; i <= si; i++)
-    {
-        printf("   %d |           %s |     %d |     %d |     %d |     1\n", symbol_table[i].kind, symbol_table[i].name, symbol_table[i].val, symbol_table[i].level, symbol_table[i].addr);
-    }
+    printf("  %d    SYS    %d    %d\n", lineCount, l, m);
 }
 
 int symb_table_check(char *str)
@@ -613,7 +615,10 @@ int const_decla_f(FILE *inf)
             symbol_table[si].val = atoi(tk.name);
             symbol_table[si].addr = 0;
             symbol_table[si].level = 0;
+            symbol_table[si].mark = 0;
             si++;
+
+            mark();
         }
         else
         {
@@ -746,13 +751,13 @@ int factor_f(FILE *inf)
         {
             m = symbol_table[curTokenIndex].val;
             cur_val = m;
-            emit("LIT", l, m);
+            emit("LIT", 0, m); // si is tp
         }
         else if (symbol_table[curTokenIndex].kind == 2)
         {
             m = symbol_table[curTokenIndex].addr;
             cur_val = symbol_table[curTokenIndex].val;
-            emit("LOD", l, m);
+            emit("LOD", symbol_table[si].level, m); // si is tp
         }
         else
         {
@@ -951,7 +956,7 @@ int statement_f(FILE *inf)
             expression_f(inf);
 
         m = symbol_table[curTokenIndex].addr;
-        emit("STO", l, m);
+        emit("STO", symbol_table[si].level, m);
         return 1;
     }
     else if (strcmp(tk.name, "call") == 0)
@@ -1044,7 +1049,7 @@ int statement_f(FILE *inf)
     {
         tk.name = getNextToken(inf);
 
-        int loopIndex = ti;
+        int loopIndex = ti * 3;
 
         int cur_val = condition_f(inf);
 
@@ -1105,7 +1110,7 @@ int statement_f(FILE *inf)
 
         m = symbol_table[symIdx].addr;
 
-        emit("STO", l, m);
+        emit("STO", symbol_table[si].level, m);
         return 1;
     }
 
@@ -1179,6 +1184,7 @@ void enter(int k, char *n, int v, int l, int a)
     symbol_table[si].level = l;
     symbol_table[si].val = v;
     symbol_table[si].addr = a + si;
+    symbol_table[si].mark = 0;
 }
 
 int var_decla_f(FILE *inf)
@@ -1203,6 +1209,7 @@ int var_decla_f(FILE *inf)
         }
 
         enter(2, tk.name, 0, l, m);
+        mark();
 
         numVars++;
         tk.name = getNextToken(inf);
@@ -1231,6 +1238,7 @@ int proc_decla_f(FILE *inf)
     }
 
     enter(3, tk.name, 0, l, m);
+    mark();
 
     tk.name = getNextToken(inf);
 
@@ -1245,8 +1253,9 @@ int proc_decla_f(FILE *inf)
 
 int block_f(FILE *inf)
 {
-    emit("JMP", l, m);
-    
+    emit("JMP", l, jpm);
+
+    jpm += m * 3;
     int numVars = 0;
 
     tk.name = getNextToken(inf);
@@ -1282,7 +1291,6 @@ int block_f(FILE *inf)
                 return ERRORCODE;
             }
 
-
             int numVarProc = block_f(inf);
 
             if (numVarProc != ERRORCODE)
@@ -1312,8 +1320,6 @@ int block_f(FILE *inf)
 
     if (cur_val == ERRORCODE)
         return ERRORCODE;
-
-    emit("SYS", 0, 3);
 
     l--;
     return numVars;

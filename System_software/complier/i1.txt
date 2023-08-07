@@ -3,5 +3,5 @@ begin
     x:=4;
     read w;
 if w > x then w:=w + 1;
-write w
+write w;
 end.
