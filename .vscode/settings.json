@@ -4,7 +4,8 @@
         "xstddef": "c",
         "system_error": "c",
         "xlocale": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "stdio.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }

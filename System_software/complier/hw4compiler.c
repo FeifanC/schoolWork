@@ -1,5 +1,5 @@
 /*
-    Feifan Cao, Juan M Garcia
+    Feifan Cao
     Dr. Montagne
     COP3402 Spring
     HW4 - NEW Tiny PL/0 compiler with lex reader
